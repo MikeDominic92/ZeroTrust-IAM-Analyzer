@@ -8,7 +8,6 @@ and database dependencies for FastAPI.
 from typing import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
 
@@ -29,8 +28,13 @@ engine = create_engine(
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create declarative base for models
-Base = declarative_base()
+# Base will be imported from models when needed
+Base = None
+
+def get_base():
+    """Get the Base class from models."""
+    from app.models import Base
+    return Base
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -54,7 +58,8 @@ def get_db() -> Generator[Session, None, None]:
 def create_tables() -> None:
     """Create all database tables."""
     try:
-        Base.metadata.create_all(bind=engine)
+        base = get_base()
+        base.metadata.create_all(bind=engine)
         logger.info("database_tables_created")
     except Exception as e:
         logger.error("database_tables_creation_failed", error=str(e), exc_info=True)
@@ -64,7 +69,8 @@ def create_tables() -> None:
 def drop_tables() -> None:
     """Drop all database tables."""
     try:
-        Base.metadata.drop_all(bind=engine)
+        base = get_base()
+        base.metadata.drop_all(bind=engine)
         logger.info("database_tables_dropped")
     except Exception as e:
         logger.error("database_tables_drop_failed", error=str(e), exc_info=True)
