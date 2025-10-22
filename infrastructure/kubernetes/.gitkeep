@@ -1,0 +1,2 @@
+# This file ensures that the kubernetes directory is tracked by Git
+# Kubernetes configuration files will be placed here

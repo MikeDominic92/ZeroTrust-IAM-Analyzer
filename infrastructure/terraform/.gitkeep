@@ -1,0 +1,2 @@
+# This file ensures that the terraform directory is tracked by Git
+# Terraform configuration files will be placed here
