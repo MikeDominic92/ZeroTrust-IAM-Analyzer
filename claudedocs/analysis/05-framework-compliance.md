@@ -44,14 +44,14 @@ class User(Base):
 ```
 
 **Gaps Preventing Full Compliance**:
-1. No integration with cloud provider APIs (Azure AD, GCP IAM, AWS IAM)
+1. No integration with cloud provider APIs (Google Workspace, GCP IAM, AWS IAM)
 2. No resource discovery or enumeration capabilities
 3. No resource inventory database or tracking system
 4. No resource metadata collection (tags, labels, compliance status)
 5. No resource dependency mapping
 
 **Recommendations**:
-- Implement Azure Resource Graph API integration for resource enumeration
+- Implement GCP Resource Graph API integration for resource enumeration
 - Create resource inventory models for compute, storage, network, identity resources
 - Add resource classification schema (public, private, sensitive, critical)
 - Implement resource tagging and metadata collection
@@ -242,7 +242,7 @@ class Scan(Base):
 7. No anomaly detection for asset behavior
 
 **Recommendations**:
-- Implement Azure Security Center integration for posture assessment
+- Implement GCP Security Center integration for posture assessment
 - Add GCP Security Command Center integration
 - Build Zero Trust scoring algorithm (0-100 scale across 7 tenets)
 - Create compliance checker for CIS Benchmarks, NIST CSF
@@ -288,7 +288,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 2. No adaptive authentication based on risk
 3. No device trust or posture verification
 4. No certificate-based authentication
-5. No integration with identity providers (Azure AD, Okta)
+5. No integration with identity providers (Google Workspace, Okta)
 6. No authorization middleware in API routes
 7. No just-in-time (JIT) access provisioning
 
@@ -297,7 +297,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 - Add WebAuthn/FIDO2 support for passwordless authentication
 - Build adaptive authentication with risk scoring
 - Implement device trust verification (managed device check)
-- Add Azure AD OIDC integration for enterprise SSO
+- Add Google Workspace OIDC integration for enterprise SSO
 - Create authorization decorator for API endpoints
 - Implement JIT access with time-bound permissions
 - Add biometric authentication support for mobile
@@ -442,8 +442,8 @@ class AuditLog(Base):
 
 **Goal**: Achieve 60% compliance with working MVP
 
-4. **Implement Azure Resource Inventory** (Tenet 1)
-   - Integrate Azure Resource Graph API
+4. **Implement GCP Resource Inventory** (Tenet 1)
+   - Integrate GCP Resource Graph API
    - Create resource discovery job
    - Store resources in database with classification
 

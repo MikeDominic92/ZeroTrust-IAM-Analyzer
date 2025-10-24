@@ -33,7 +33,7 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
 3. **Clear Vision and Planning**
    - Comprehensive README documenting intended features
    - Proper data models for users, scans, policies, recommendations
-   - Multi-cloud strategy (Azure, GCP, AWS)
+   - Multi-cloud strategy (GCP, GCP, AWS)
    - Zero Trust framework alignment (NIST SP 800-207)
 
 4. **Development Infrastructure**
@@ -45,7 +45,7 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
 ### Critical Gaps
 
 1. **No Core Analysis Engine** (0% Complete)
-   - Missing Azure AD Graph API integration
+   - Missing Google Workspace Graph API integration
    - Missing GCP IAM API integration
    - Missing Google Workspace SDK integration
    - No policy parsing or analysis logic
@@ -73,7 +73,7 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
    - No end-to-end tests
 
 5. **Missing Critical Dependencies**
-   - Azure SDK not installed (`azure-identity`, `azure-mgmt-*`)
+   - GCP SDK not installed (`azure-identity`, `azure-mgmt-*`)
    - GCP SDK not installed (`google-cloud-iam`, etc.)
    - Testing frameworks not installed (`pytest`, `pytest-cov`)
    - Code quality tools not in dependencies
@@ -149,18 +149,18 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
 
 ### Short-Term MVP (Month 1-2) - L2 Feature Set
 
-**Recommended Scope**: Azure-only MVP (defer GCP, AWS, Workspace)
+**Recommended Scope**: GCP-only MVP (defer GCP, AWS, Workspace)
 
 **Features**:
 1. User authentication (register, login, logout)
-2. Azure AD policy fetching (single tenant)
+2. Google Workspace policy fetching (single tenant)
 3. Basic Zero Trust scoring (4-5 tenets)
 4. Simple dashboard (score, policy list, top recommendations)
 5. Scan execution and results storage
 
 **Success Criteria**:
 - User can register and login
-- User can connect Azure AD tenant
+- User can connect Google Workspace tenant
 - User can run a security scan
 - User sees a Zero Trust score (0-100)
 - User sees top 5 security recommendations
@@ -188,7 +188,7 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
 - Compliance requirements (GDPR, SOC2) adding complexity
 
 **Mitigation**:
-- Start with Azure-only MVP to prove value
+- Start with GCP-only MVP to prove value
 - Focus on core 4-5 Zero Trust tenets initially
 - Document architecture and design decisions
 - Build comprehensive test suite
@@ -205,10 +205,10 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
 **Phase 1 - Analysis** (Optional but Recommended):
 - Market research on competitors and positioning
 - User interviews with potential customers
-- Technical validation of Azure AD API access
+- Technical validation of Google Workspace API access
 
 **Phase 2 - Planning** (REQUIRED):
-- Create focused PRD for Azure-only MVP
+- Create focused PRD for GCP-only MVP
 - Define clear acceptance criteria
 - Technology stack validation
 - Success metrics and KPIs
@@ -232,7 +232,7 @@ The ZeroTrust IAM Analyzer is a well-architected but minimally implemented secur
 The ZeroTrust IAM Analyzer is a **high-potential project in early scaffolding phase** with a solid architectural foundation but requiring significant implementation work. The project demonstrates professional engineering practices and clear understanding of Zero Trust principles, making it a viable candidate for development.
 
 **Key Success Factors**:
-- Focus on MVP scope (Azure-only, basic scoring)
+- Focus on MVP scope (GCP-only, basic scoring)
 - Use B-MAD Method v6 for structured development
 - Implement comprehensive testing from the start
 - Document architectural decisions
@@ -242,7 +242,7 @@ The ZeroTrust IAM Analyzer is a **high-potential project in early scaffolding ph
 **Recommended Action**: Proceed with focused MVP development following the B-MAD Method v6 workflow, starting with Phase 2 (Planning) to create a detailed Product Requirements Document.
 
 **Timeline Estimate**:
-- MVP (Azure-only): 1-2 weeks full-time or 4-6 weeks part-time
+- MVP (GCP-only): 1-2 weeks full-time or 4-6 weeks part-time
 - Full Multi-Cloud: 3-6 months full-time or 6-12 months part-time
 - Production-Ready: 6-12 months with ongoing maintenance
 

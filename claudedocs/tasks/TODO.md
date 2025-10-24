@@ -25,8 +25,8 @@ This master task list tracks all work items across 7 development phases for the 
 
 **Goal**: Establish development environment and install all required dependencies
 
-- [ ] Task 0.1: Install Azure SDK dependencies (azure-identity, azure-mgmt-authorization, msgraph-core)
-- [ ] Task 0.2: Install Google Cloud SDK dependencies (google-cloud-iam, google-cloud-resource-manager, google-auth)
+- [ ] Task 0.1: Install Google Cloud SDK dependencies (google-cloud-iam, google-cloud-asset, google-cloud-recommender, google-cloud-securitycenter)
+- [ ] Task 0.2: Install Google Workspace SDK dependencies (google-api-python-client, google-auth, google-auth-httplib2)
 - [ ] Task 0.3: Install testing framework dependencies (pytest, pytest-asyncio, pytest-cov, pytest-mock)
 - [ ] Task 0.4: Install code quality tools (black, isort, flake8, mypy, bandit)
 - [ ] Task 0.5: Configure pre-commit hooks for code quality enforcement
@@ -58,21 +58,21 @@ This master task list tracks all work items across 7 development phases for the 
 
 ---
 
-## Phase 2: MVP - Azure-Only Zero Trust Analysis
+## Phase 2: MVP - GCP-Only Zero Trust Analysis
 
-**Goal**: Implement core Zero Trust analysis for Azure AD with basic dashboard
+**Goal**: Implement core Zero Trust analysis for Google Cloud IAM with basic dashboard
 
 **Detailed breakdown in**: [phase-2-mvp.md](./phase-2-mvp.md)
 
-### Azure Integration
-- [ ] Task 2.1: Configure Azure SDK authentication with service principal
-- [ ] Task 2.2: Implement Azure credential management service
-- [ ] Task 2.3: Implement Azure AD tenant connection validation
+### GCP Integration
+- [ ] Task 2.1: Configure GCP SDK authentication with service account
+- [ ] Task 2.2: Implement GCP credential management service
+- [ ] Task 2.3: Implement GCP project connection validation
 - [ ] Task 2.4: Create Alembic migrations for CloudProvider and TenantConnection models
 
 ### Policy Management
-- [ ] Task 2.5: Implement Azure Conditional Access Policy fetching service
-- [ ] Task 2.6: Implement Azure RBAC policy fetching service
+- [ ] Task 2.5: Implement GCP IAM Policy fetching service
+- [ ] Task 2.6: Implement GCP IAM Recommender fetching service
 - [ ] Task 2.7: Create Alembic migrations for Policy and PolicyRule models
 - [ ] Task 2.8: Implement policy parsing and normalization logic
 
@@ -144,21 +144,21 @@ This master task list tracks all work items across 7 development phases for the 
 
 ---
 
-## Phase 5: Multi-Cloud Expansion
+## Phase 5: Google Workspace and Advanced GCP Features
 
-**Goal**: Extend analysis to Google Cloud Platform and AWS
+**Goal**: Extend analysis to Google Workspace and add advanced GCP security features
 
-### Google Cloud Platform Integration
-- [ ] Task 5.1: Implement GCP service account authentication
-- [ ] Task 5.2: Implement GCP IAM policy fetching service
-- [ ] Task 5.3: Implement GCP-specific Zero Trust scoring rules
-- [ ] Task 5.4: Update dashboard to display GCP analysis results
+### Google Workspace Integration
+- [ ] Task 5.1: Implement Google Workspace domain-wide delegation
+- [ ] Task 5.2: Implement Google Workspace user and group analysis
+- [ ] Task 5.3: Implement Security Command Center integration
+- [ ] Task 5.4: Implement Policy Analyzer integration
 
-### AWS Integration
-- [ ] Task 5.5: Implement AWS IAM credential management with STS
-- [ ] Task 5.6: Implement AWS IAM policy fetching service
-- [ ] Task 5.7: Implement AWS-specific Zero Trust scoring rules
-- [ ] Task 5.8: Update dashboard to display multi-cloud unified view
+### Advanced GCP Security Features
+- [ ] Task 5.5: Implement IAM Recommender insights
+- [ ] Task 5.6: Implement Cloud Asset Inventory integration
+- [ ] Task 5.7: Implement BeyondCorp Enterprise context-aware access
+- [ ] Task 5.8: Update dashboard to display comprehensive GCP and Workspace analysis
 
 ---
 

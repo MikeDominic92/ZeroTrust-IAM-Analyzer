@@ -46,11 +46,16 @@ class Settings(BaseSettings):
     gcp_project_id: Optional[str] = Field(default=None, env="GCP_PROJECT_ID")
     gcp_region: str = Field(default="us-central1", env="GCP_REGION")
     
-    # Microsoft Entra ID Configuration
-    azure_tenant_id: Optional[str] = Field(default=None, env="AZURE_TENANT_ID")
-    azure_client_id: Optional[str] = Field(default=None, env="AZURE_CLIENT_ID")
-    azure_client_secret: Optional[str] = Field(default=None, env="AZURE_CLIENT_SECRET")
-    azure_authority: str = Field(default="https://login.microsoftonline.com", env="AZURE_AUTHORITY")
+    # Google Cloud IAM & Workspace Configuration
+    gcp_service_account_file: Optional[str] = Field(default=None, env="GCP_SERVICE_ACCOUNT_FILE")
+    gcp_service_account_json: Optional[str] = Field(default=None, env="GCP_SERVICE_ACCOUNT_JSON")
+    workspace_customer_id: Optional[str] = Field(default=None, env="WORKSPACE_CUSTOMER_ID")
+    workspace_admin_email: Optional[str] = Field(default=None, env="WORKSPACE_ADMIN_EMAIL")
+    workspace_domain: Optional[str] = Field(default=None, env="WORKSPACE_DOMAIN")
+
+    # Security Command Center Configuration
+    scc_organization_id: Optional[str] = Field(default=None, env="SCC_ORGANIZATION_ID")
+    scc_source_id: Optional[str] = Field(default=None, env="SCC_SOURCE_ID")
     
     # Cloud Run Configuration
     cloud_run_service_url: Optional[str] = Field(default=None, env="CLOUD_RUN_SERVICE_URL")
@@ -65,9 +70,10 @@ class Settings(BaseSettings):
     cache_max_size: int = Field(default=1000, env="CACHE_MAX_SIZE")
     
     # External API Rate Limiting
-    azure_api_rate_limit: int = Field(default=100, env="AZURE_API_RATE_LIMIT")
-    gcp_api_rate_limit: int = Field(default=100, env="GCP_API_RATE_LIMIT")
+    gcp_iam_api_rate_limit: int = Field(default=100, env="GCP_IAM_API_RATE_LIMIT")
+    gcp_asset_api_rate_limit: int = Field(default=100, env="GCP_ASSET_API_RATE_LIMIT")
     workspace_api_rate_limit: int = Field(default=100, env="WORKSPACE_API_RATE_LIMIT")
+    scc_api_rate_limit: int = Field(default=100, env="SCC_API_RATE_LIMIT")
     
     # Monitoring and Observability
     enable_metrics: bool = Field(default=True, env="ENABLE_METRICS")
@@ -91,6 +97,9 @@ class Settings(BaseSettings):
     enable_email_notifications: bool = Field(default=False, env="ENABLE_EMAIL_NOTIFICATIONS")
     enable_webhook_notifications: bool = Field(default=False, env="ENABLE_WEBHOOK_NOTIFICATIONS")
     enable_advanced_analytics: bool = Field(default=True, env="ENABLE_ADVANCED_ANALYTICS")
+    enable_policy_analyzer: bool = Field(default=True, env="ENABLE_POLICY_ANALYZER")
+    enable_iam_recommender: bool = Field(default=True, env="ENABLE_IAM_RECOMMENDER")
+    enable_security_command_center: bool = Field(default=True, env="ENABLE_SECURITY_COMMAND_CENTER")
     
     # Development Settings
     reload: bool = Field(default=False, env="RELOAD")

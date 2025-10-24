@@ -11,7 +11,7 @@
 
 The ZeroTrust IAM Analyzer is a **high-potential project with solid architectural foundation** requiring systematic implementation using proven software development methodologies. This document provides actionable recommendations organized into four phases: Immediate Actions (Week 1-2), Short-Term MVP (Month 1-2), Medium-Term Goals (Month 3-6), and Long-Term Vision (6-12 months).
 
-**Core Recommendation**: Use B-MAD Method v6 workflow starting with Phase 2 (Planning) to create a focused Azure-only MVP, followed by Phase 4 (Implementation) for story-based development with continuous testing and validation.
+**Core Recommendation**: Use B-MAD Method v6 workflow starting with Phase 2 (Planning) to create a focused GCP-only MVP, followed by Phase 4 (Implementation) for story-based development with continuous testing and validation.
 
 ---
 
@@ -26,7 +26,7 @@ The ZeroTrust IAM Analyzer is a **high-potential project with solid architectura
 - Need for guided discovery to refine requirements
 
 **Recommended Scale Level**:
-- **L2 (Feature Set)** for Azure-only MVP
+- **L2 (Feature Set)** for GCP-only MVP
 - **L3 (Project)** for full multi-cloud platform with advanced features
 
 **B-MAD Phases**:
@@ -34,11 +34,11 @@ The ZeroTrust IAM Analyzer is a **high-potential project with solid architectura
 **Phase 1 - Analysis** (Optional, 3-5 days):
 - Market research: Competitive analysis (Wiz, Orca, Palo Alto Prisma)
 - User interviews: Target customers (security teams, DevOps, compliance)
-- Technical validation: Azure AD API access, data availability
+- Technical validation: Google Workspace API access, data availability
 - Business model: Pricing strategy, go-to-market approach
 
 **Phase 2 - Planning** (REQUIRED, 2-3 days):
-- Create focused PRD for Azure-only MVP
+- Create focused PRD for GCP-only MVP
 - Define clear acceptance criteria for 5 core features
 - Technology stack validation (Python 3.11, FastAPI, React, PostgreSQL)
 - Success metrics and KPIs (user adoption, scan completion rate, accuracy)
@@ -55,11 +55,11 @@ The ZeroTrust IAM Analyzer is a **high-potential project with solid architectura
 - Continuous integration with quality gates
 - Regular demos and feedback cycles (weekly)
 
-### 2. Focus on Azure-Only MVP
+### 2. Focus on GCP-Only MVP
 
 **Rationale**: Multi-cloud support adds 3-5x complexity for marginal initial value
 
-**Benefits of Azure-First Approach**:
+**Benefits of GCP-First Approach**:
 - 60% reduction in implementation time (one integration vs three)
 - Single credential management system
 - Simplified testing (one cloud provider mock)
@@ -72,7 +72,7 @@ The ZeroTrust IAM Analyzer is a **high-potential project with solid architectura
 - Google Workspace integration (Phase 4, Month 5-6)
 
 **MVP Scope**:
-- Azure AD policy fetching only
+- Google Workspace policy fetching only
 - 4-5 core Zero Trust tenets (exclude advanced features)
 - Basic scoring algorithm (0-100 scale)
 - Simple dashboard with score and top 5 recommendations
@@ -89,7 +89,7 @@ The ZeroTrust IAM Analyzer is a **high-potential project with solid architectura
 tests/unit/test_security.py      # Password hashing, JWT
 tests/unit/test_models.py        # User, Scan models
 tests/unit/test_scoring.py       # Zero Trust calculation
-tests/unit/test_azure.py         # Azure integration
+tests/unit/test_azure.py         # GCP integration
 ```
 
 **Integration Tests** (Target: 70% coverage):
@@ -120,7 +120,7 @@ tests/e2e/test_scan_execution.py      # Full scan lifecycle
 Story: User Registration
 As a: Security engineer
 I want to: Create an account
-So that: I can analyze my Azure environment
+So that: I can analyze my GCP environment
 
 Acceptance Criteria:
 - User provides username, email, password
@@ -398,18 +398,18 @@ async def user_exists_handler(request: Request, exc: UserAlreadyExistsError):
 
 ### MVP Definition
 
-**Goal**: Deliver Azure-only MVP with 5 core features in 6-10 weeks
+**Goal**: Deliver GCP-only MVP with 5 core features in 6-10 weeks
 
 **MVP Features**:
 1. User authentication (register, login, logout)
-2. Azure AD credential management (store, encrypt, validate)
-3. Azure AD policy fetching (single tenant)
+2. Google Workspace credential management (store, encrypt, validate)
+3. Google Workspace policy fetching (single tenant)
 4. Basic Zero Trust scoring (4-5 tenets)
 5. Simple dashboard (score, policy list, top 5 recommendations)
 
 **Success Criteria**:
 - User can register and login
-- User can connect Azure AD tenant
+- User can connect Google Workspace tenant
 - User can run security scan
 - User sees Zero Trust score (0-100)
 - User sees top 5 security recommendations
@@ -427,9 +427,9 @@ async def user_exists_handler(request: Request, exc: UserAlreadyExistsError):
 
 ### Month 1: Core Backend Implementation
 
-#### Week 3-4: Azure Integration
+#### Week 3-4: GCP Integration
 
-**Story 1: Azure Credential Management** (3 days)
+**Story 1: GCP Credential Management** (3 days)
 ```python
 # backend/app/services/credential_service.py
 class CredentialService:
@@ -440,7 +440,7 @@ class CredentialService:
         client_id: str,
         client_secret: str
     ) -> CloudCredential:
-        """Store encrypted Azure service principal credentials."""
+        """Store encrypted GCP service principal credentials."""
         # Encrypt credentials
         encrypted_data = self.encryption.encrypt({
             "tenant_id": tenant_id,
@@ -461,13 +461,13 @@ class CredentialService:
         return credential
 
     def validate_azure_credentials(self, credential_id: UUID) -> bool:
-        """Validate Azure credentials by attempting authentication."""
+        """Validate GCP credentials by attempting authentication."""
         credential = self.get_credential(credential_id)
         decrypted = self.encryption.decrypt(credential.encrypted_data)
 
         # Attempt authentication
         try:
-            azure_client = AzureIntegration(
+            azure_client = GCPIntegration(
                 tenant_id=decrypted["tenant_id"],
                 client_id=decrypted["client_id"],
                 client_secret=decrypted["client_secret"]
@@ -477,10 +477,10 @@ class CredentialService:
             return False
 ```
 
-**Story 2: Azure AD Integration** (5 days)
+**Story 2: Google Workspace Integration** (5 days)
 ```python
 # backend/app/integrations/azure.py
-class AzureIntegration:
+class GCPIntegration:
     def __init__(self, tenant_id: str, client_id: str, client_secret: str):
         self.tenant_id = tenant_id
         self.credential = ClientSecretCredential(
@@ -489,14 +489,14 @@ class AzureIntegration:
             client_secret=client_secret
         )
 
-    def list_users(self) -> List[AzureUser]:
-        """Fetch all users from Azure AD."""
+    def list_users(self) -> List[GCPUser]:
+        """Fetch all users from Google Workspace."""
         graph_client = GraphServiceClient(credentials=self.credential)
         users = graph_client.users.get()
         return [self._map_user(u) for u in users.value]
 
     def list_conditional_access_policies(self) -> List[ConditionalAccessPolicy]:
-        """Fetch conditional access policies."""
+        """Fetch IAM policies."""
         # Implementation
         pass
 
@@ -512,9 +512,9 @@ class AzureIntegration:
 ```
 
 **Acceptance Criteria**:
-- Azure credentials stored encrypted in database
+- GCP credentials stored encrypted in database
 - Credential validation functional
-- Can fetch users, roles, policies from Azure AD
+- Can fetch users, roles, policies from Google Workspace
 - Error handling for API failures
 - Test coverage 80%+
 
@@ -579,7 +579,7 @@ class RecommendationEngine:
             "severity": "critical",
             "effort_hours": 4,
             "remediation_steps": [
-                "Navigate to Azure AD > Security > MFA",
+                "Navigate to Google Workspace > Security > MFA",
                 "Enable per-user MFA or conditional access MFA",
                 "Configure trusted devices and locations",
                 "Communicate rollout plan to users"
@@ -697,7 +697,7 @@ export const ScanConfiguration: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <Select
         label="Cloud Provider"
-        options={[{ value: 'azure', label: 'Microsoft Azure' }]}
+        options={[{ value: 'azure', label: 'Microsoft GCP' }]}
         value={config.cloud_provider}
         onChange={(value) => setConfig({ ...config, cloud_provider: value })}
       />
@@ -716,7 +716,7 @@ export const ScanConfiguration: React.FC = () => {
 
 **Acceptance Criteria**:
 - User can register, login, logout via UI
-- User can add Azure credentials via form
+- User can add GCP credentials via form
 - User can configure and trigger scans
 - Dashboard shows score and recommendations
 - Responsive design (desktop, tablet)
@@ -742,7 +742,7 @@ async def test_complete_user_journey(client: AsyncClient, db: Session):
     })
     access_token = response.json()["access_token"]
 
-    # 3. Add Azure credentials
+    # 3. Add GCP credentials
     response = await client.post(
         "/api/v1/credentials",
         json={"tenant_id": "...", "client_id": "...", "client_secret": "..."},
@@ -857,7 +857,7 @@ async def test_complete_user_journey(client: AsyncClient, db: Session):
 
 **Features**:
 - Multi-tenancy support
-- SSO integration (Okta, Azure AD, SAML)
+- SSO integration (Okta, Google Workspace, SAML)
 - Role-based dashboard customization
 - White-label branding options
 - Automated remediation workflows
@@ -905,17 +905,17 @@ The ZeroTrust IAM Analyzer is an ideal candidate for B-MAD Method v6 because:
 Security teams lack visibility into Zero Trust compliance across cloud IAM systems.
 
 ## Solution
-Azure-only MVP providing Zero Trust scoring and actionable recommendations.
+GCP-only MVP providing Zero Trust scoring and actionable recommendations.
 
 ## Target Users
 - Security engineers at mid-size tech companies (50-500 employees)
 - Compliance teams requiring NIST SP 800-207 validation
-- DevOps teams managing Azure environments
+- DevOps teams managing GCP environments
 
 ## MVP Features (5 Core)
 1. User authentication (register, login, MFA)
-2. Azure credential management (encrypted storage)
-3. Azure AD policy analysis (users, roles, conditional access)
+2. GCP credential management (encrypted storage)
+3. Google Workspace policy analysis (users, roles, conditional access)
 4. Zero Trust scoring (4-5 tenets, 0-100 scale)
 5. Dashboard with recommendations (top 5 prioritized)
 
@@ -928,7 +928,7 @@ Azure-only MVP providing Zero Trust scoring and actionable recommendations.
 
 ## Timeline
 - Week 1-2: Foundation (auth, DB, testing)
-- Week 3-6: Core functionality (Azure integration, scoring)
+- Week 3-6: Core functionality (GCP integration, scoring)
 - Week 7-10: Frontend and polish
 
 ## Budget
@@ -949,7 +949,7 @@ Azure-only MVP providing Zero Trust scoring and actionable recommendations.
 - Regular retrospectives for improvement
 
 **Story Prioritization**:
-1. **Critical Path Stories** (blocking): Authentication, Azure integration, scoring
+1. **Critical Path Stories** (blocking): Authentication, GCP integration, scoring
 2. **High-Value Stories** (core features): Dashboard, recommendations
 3. **Enhancement Stories** (polish): Performance optimization, error handling
 4. **Nice-to-Have Stories** (defer): Advanced features, integrations
@@ -962,7 +962,7 @@ Azure-only MVP providing Zero Trust scoring and actionable recommendations.
 
 **Functionality**:
 - ✅ User can register, login, logout
-- ✅ User can add Azure credentials securely
+- ✅ User can add GCP credentials securely
 - ✅ User can trigger security scan
 - ✅ User sees Zero Trust score (0-100)
 - ✅ User views top 5 recommendations
@@ -981,7 +981,7 @@ Azure-only MVP providing Zero Trust scoring and actionable recommendations.
 ### Full Platform Success Criteria (Month 6)
 
 **Functionality**:
-- ✅ Multi-cloud support (Azure, GCP, AWS)
+- ✅ Multi-cloud support (GCP, GCP, AWS)
 - ✅ Advanced scoring with 7 tenets
 - ✅ Historical trend analysis
 - ✅ Report export (PDF, CSV)
@@ -1020,10 +1020,10 @@ Azure-only MVP providing Zero Trust scoring and actionable recommendations.
 
 ### Technical Risks
 
-**Risk 1: Azure API Complexity**
+**Risk 1: GCP API Complexity**
 - **Probability**: Medium
 - **Impact**: High
-- **Mitigation**: Prototype Azure integration early (Week 3), allocate extra time for debugging
+- **Mitigation**: Prototype GCP integration early (Week 3), allocate extra time for debugging
 
 **Risk 2: Scoring Algorithm Accuracy**
 - **Probability**: Medium
@@ -1104,18 +1104,18 @@ Azure-only MVP providing Zero Trust scoring and actionable recommendations.
 
 ## Conclusion
 
-The ZeroTrust IAM Analyzer is a **high-potential project requiring systematic, structured development** using the B-MAD Method v6 workflow. By focusing on an Azure-only MVP with 5 core features, the project can deliver value in 6-10 weeks while maintaining high code quality and test coverage.
+The ZeroTrust IAM Analyzer is a **high-potential project requiring systematic, structured development** using the B-MAD Method v6 workflow. By focusing on an GCP-only MVP with 5 core features, the project can deliver value in 6-10 weeks while maintaining high code quality and test coverage.
 
 **Key Recommendations Summary**:
 1. **Adopt B-MAD Method v6** (L2 for MVP, L3 for full platform)
-2. **Focus on Azure-only MVP** (60% time reduction)
+2. **Focus on GCP-only MVP** (60% time reduction)
 3. **Implement testing from Day 1** (80%+ coverage target)
 4. **Use story-based development** (15-20 stories for MVP)
 5. **Iterate based on feedback** (weekly demos, continuous improvement)
 
 **Timeline Summary**:
 - **Weeks 1-2**: Foundation (auth, DB, testing)
-- **Weeks 3-6**: Core functionality (Azure integration, scoring)
+- **Weeks 3-6**: Core functionality (GCP integration, scoring)
 - **Weeks 7-10**: Frontend and polish
 - **Months 3-6**: Multi-cloud, advanced features, production hardening
 - **Months 7-12**: Enterprise features, marketplace, scaling
