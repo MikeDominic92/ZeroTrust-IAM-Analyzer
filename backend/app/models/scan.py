@@ -30,10 +30,8 @@ class ScanStatus(str, Enum):
 
 class ScanType(str, Enum):
     """Scan type enumeration."""
-    MICROSOFT_ENTRA = "microsoft_entra"
     GOOGLE_CLOUD_IAM = "google_cloud_iam"
-    AWS_IAM = "aws_iam"
-    AZURE_AD = "azure_ad"
+    GOOGLE_WORKSPACE = "google_workspace"
     COMPREHENSIVE = "comprehensive"
 
 
