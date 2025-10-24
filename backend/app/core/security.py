@@ -8,10 +8,10 @@ and authentication dependencies.
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional, Union
 
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from .config import get_settings
@@ -28,34 +28,25 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 
-def create_access_token(
-    subject: Union[str, Any], 
-    expires_delta: Optional[timedelta] = None
-) -> str:
+def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """
     Create JWT access token.
-    
+
     Args:
         subject: Token subject (usually user ID or email)
         expires_delta: Token expiration time (optional)
-        
+
     Returns:
         JWT token string
     """
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.access_token_expire_minutes
-        )
-    
+        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
     to_encode = {"exp": expire, "sub": str(subject)}
-    encoded_jwt = jwt.encode(
-        to_encode, 
-        settings.secret_key, 
-        algorithm=settings.algorithm
-    )
-    
+    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+
     logger.debug("access_token_created", subject=subject, expires=expire)
     return encoded_jwt
 
@@ -63,24 +54,20 @@ def create_access_token(
 def verify_token(token: str) -> Optional[str]:
     """
     Verify JWT token and return subject.
-    
+
     Args:
         token: JWT token string
-        
+
     Returns:
         Token subject if valid, None otherwise
     """
     try:
-        payload = jwt.decode(
-            token, 
-            settings.secret_key, 
-            algorithms=[settings.algorithm]
-        )
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         subject: str = payload.get("sub")
         if subject is None:
             logger.warning("token_missing_subject", token=token[:10] + "...")
             return None
-        
+
         logger.debug("token_verified", subject=subject)
         return subject
     except JWTError as e:
@@ -91,10 +78,10 @@ def verify_token(token: str) -> Optional[str]:
 def get_password_hash(password: str) -> str:
     """
     Hash password using bcrypt.
-    
+
     Args:
         password: Plain text password
-        
+
     Returns:
         Hashed password
     """
@@ -106,11 +93,11 @@ def get_password_hash(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verify plain password against hashed password.
-    
+
     Args:
         plain_password: Plain text password
         hashed_password: Hashed password
-        
+
     Returns:
         True if password matches, False otherwise
     """
@@ -120,19 +107,18 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_current_user_id(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)
 ) -> str:
     """
     Dependency to get current user ID from JWT token.
-    
+
     Args:
         credentials: HTTP Bearer credentials
         db: Database session
-        
+
     Returns:
         User ID
-        
+
     Raises:
         HTTPException: If token is invalid
     """
@@ -141,12 +127,12 @@ def get_current_user_id(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         user_id = verify_token(credentials.credentials)
         if user_id is None:
             raise credentials_exception
-        
+
         # Here you would typically verify the user exists in the database
         # For now, we'll just return the user_id
         return user_id
@@ -156,19 +142,18 @@ def get_current_user_id(
 
 
 def get_current_user(
-    current_user_id: str = Depends(get_current_user_id),
-    db: Session = Depends(get_db)
+    current_user_id: str = Depends(get_current_user_id), db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
     Dependency to get current user information.
-    
+
     Args:
         current_user_id: Current user ID
         db: Database session
-        
+
     Returns:
         User information
-        
+
     Raises:
         HTTPException: If user is not found
     """
@@ -179,22 +164,21 @@ def get_current_user(
         "email": f"user_{current_user_id}@example.com",  # Placeholder
         "is_active": True,
     }
-    
+
     logger.debug("current_user_retrieved", user_id=current_user_id)
     return user_info
 
 
 def create_refresh_token(
-    subject: Union[str, Any], 
-    expires_delta: Optional[timedelta] = None
+    subject: Union[str, Any], expires_delta: Optional[timedelta] = None
 ) -> str:
     """
     Create JWT refresh token.
-    
+
     Args:
         subject: Token subject (usually user ID or email)
         expires_delta: Token expiration time (optional)
-        
+
     Returns:
         JWT refresh token string
     """
@@ -203,18 +187,10 @@ def create_refresh_token(
     else:
         # Refresh tokens typically have longer expiration
         expire = datetime.utcnow() + timedelta(days=7)
-    
-    to_encode = {
-        "exp": expire, 
-        "sub": str(subject),
-        "type": "refresh"
-    }
-    encoded_jwt = jwt.encode(
-        to_encode, 
-        settings.secret_key, 
-        algorithm=settings.algorithm
-    )
-    
+
+    to_encode = {"exp": expire, "sub": str(subject), "type": "refresh"}
+    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+
     logger.debug("refresh_token_created", subject=subject, expires=expire)
     return encoded_jwt
 
@@ -222,26 +198,22 @@ def create_refresh_token(
 def verify_refresh_token(token: str) -> Optional[str]:
     """
     Verify JWT refresh token and return subject.
-    
+
     Args:
         token: JWT refresh token string
-        
+
     Returns:
         Token subject if valid, None otherwise
     """
     try:
-        payload = jwt.decode(
-            token, 
-            settings.secret_key, 
-            algorithms=[settings.algorithm]
-        )
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         subject: str = payload.get("sub")
         token_type: str = payload.get("type")
-        
+
         if subject is None or token_type != "refresh":
             logger.warning("invalid_refresh_token", token=token[:10] + "...")
             return None
-        
+
         logger.debug("refresh_token_verified", subject=subject)
         return subject
     except JWTError as e:
@@ -251,47 +223,47 @@ def verify_refresh_token(token: str) -> Optional[str]:
 
 class TokenManager:
     """Token management utility class."""
-    
+
     def __init__(self):
         """Initialize token manager."""
         self.secret_key = settings.secret_key
         self.algorithm = settings.algorithm
         self.access_token_expire_minutes = settings.access_token_expire_minutes
-    
+
     def create_token_pair(self, subject: Union[str, Any]) -> Dict[str, str]:
         """
         Create access and refresh token pair.
-        
+
         Args:
             subject: Token subject
-            
+
         Returns:
             Dictionary containing access and refresh tokens
         """
         access_token = create_access_token(subject)
         refresh_token = create_refresh_token(subject)
-        
+
         logger.info("token_pair_created", subject=subject)
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
         }
-    
+
     def refresh_access_token(self, refresh_token: str) -> Optional[str]:
         """
         Create new access token from refresh token.
-        
+
         Args:
             refresh_token: Valid refresh token
-            
+
         Returns:
             New access token if refresh token is valid, None otherwise
         """
         subject = verify_refresh_token(refresh_token)
         if subject is None:
             return None
-        
+
         new_access_token = create_access_token(subject)
         logger.info("access_token_refreshed", subject=subject)
         return new_access_token
@@ -304,7 +276,7 @@ token_manager = TokenManager()
 def get_token_manager() -> TokenManager:
     """
     Get token manager instance.
-    
+
     Returns:
         Token manager instance
     """
@@ -314,11 +286,12 @@ def get_token_manager() -> TokenManager:
 def generate_session_token() -> str:
     """
     Generate a random session token.
-    
+
     Returns:
         Random session token
     """
     import secrets
+
     token = secrets.token_urlsafe(32)
     logger.debug("session_token_generated")
     return token
@@ -327,10 +300,10 @@ def generate_session_token() -> str:
 def hash_api_key(api_key: str) -> str:
     """
     Hash API key using bcrypt.
-    
+
     Args:
         api_key: Plain text API key
-        
+
     Returns:
         Hashed API key
     """
@@ -342,11 +315,11 @@ def hash_api_key(api_key: str) -> str:
 def verify_api_key(plain_api_key: str, hashed_api_key: str) -> bool:
     """
     Verify plain API key against hashed API key.
-    
+
     Args:
         plain_api_key: Plain text API key
         hashed_api_key: Hashed API key
-        
+
     Returns:
         True if API key matches, False otherwise
     """
@@ -358,14 +331,15 @@ def verify_api_key(plain_api_key: str, hashed_api_key: str) -> bool:
 def create_api_key() -> Dict[str, str]:
     """
     Create a new API key.
-    
+
     Returns:
         Dictionary containing API key and its hash
     """
     import secrets
+
     api_key = secrets.token_urlsafe(32)
     hashed_key = hash_api_key(api_key)
-    
+
     logger.info("api_key_created")
     return {
         "api_key": api_key,

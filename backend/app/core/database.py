@@ -8,7 +8,7 @@ and database dependencies for FastAPI.
 from typing import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from .config import get_settings
@@ -31,16 +31,18 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Base will be imported from models when needed
 Base = None
 
+
 def get_base():
     """Get the Base class from models."""
     from app.models import Base
+
     return Base
 
 
 def get_db() -> Generator[Session, None, None]:
     """
     Dependency function to get database session.
-    
+
     Yields:
         Database session
     """
@@ -80,7 +82,7 @@ def drop_tables() -> None:
 def check_database_connection() -> bool:
     """
     Check if database connection is healthy.
-    
+
     Returns:
         True if connection is healthy, False otherwise
     """
@@ -96,25 +98,25 @@ def check_database_connection() -> bool:
 
 class DatabaseManager:
     """Database connection manager."""
-    
+
     def __init__(self):
         """Initialize database manager."""
         self.engine = engine
         self.session_factory = SessionLocal
-    
+
     def get_session(self) -> Session:
         """
         Get a new database session.
-        
+
         Returns:
             Database session
         """
         return self.session_factory()
-    
+
     def health_check(self) -> dict:
         """
         Perform database health check.
-        
+
         Returns:
             Health check result
         """
@@ -122,7 +124,7 @@ class DatabaseManager:
             with self.engine.connect() as connection:
                 result = connection.execute("SELECT 1")
                 row = result.fetchone()
-                
+
             return {
                 "status": "healthy",
                 "database": "connected",
@@ -136,7 +138,7 @@ class DatabaseManager:
                 "database": "disconnected",
                 "error": str(e),
             }
-    
+
     def close_connections(self) -> None:
         """Close all database connections."""
         try:
@@ -154,7 +156,7 @@ db_manager = DatabaseManager()
 def get_db_manager() -> DatabaseManager:
     """
     Get database manager instance.
-    
+
     Returns:
         Database manager instance
     """
@@ -163,20 +165,20 @@ def get_db_manager() -> DatabaseManager:
 
 class DatabaseTransaction:
     """Context manager for database transactions."""
-    
+
     def __init__(self, session: Session):
         """
         Initialize transaction context manager.
-        
+
         Args:
             session: Database session
         """
         self.session = session
-    
+
     def __enter__(self) -> Session:
         """Enter transaction context."""
         return self.session
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit transaction context."""
         try:
@@ -203,10 +205,10 @@ class DatabaseTransaction:
 def transaction(session: Session) -> DatabaseTransaction:
     """
     Create a database transaction context manager.
-    
+
     Args:
         session: Database session
-        
+
     Returns:
         Database transaction context manager
     """
@@ -216,12 +218,12 @@ def transaction(session: Session) -> DatabaseTransaction:
 async def execute_raw_sql(session: Session, query: str, params: dict = None) -> any:
     """
     Execute raw SQL query.
-    
+
     Args:
         session: Database session
         query: SQL query string
         params: Query parameters (optional)
-        
+
     Returns:
         Query result
     """
@@ -243,7 +245,7 @@ async def execute_raw_sql(session: Session, query: str, params: dict = None) -> 
 def get_database_info() -> dict:
     """
     Get database information.
-    
+
     Returns:
         Database information
     """
@@ -255,7 +257,7 @@ def get_database_info() -> dict:
                 version = result.fetchone()[0]
             else:
                 version = "Unknown"
-            
+
             # Get connection pool info
             pool = engine.pool
             pool_info = {
@@ -264,9 +266,13 @@ def get_database_info() -> dict:
                 "checked_out": pool.checkedout(),
                 "overflow": pool.overflow(),
             }
-            
+
             return {
-                "url": settings.database_url.split("@")[-1] if "@" in settings.database_url else "hidden",
+                "url": (
+                    settings.database_url.split("@")[-1]
+                    if "@" in settings.database_url
+                    else "hidden"
+                ),
                 "version": version,
                 "pool": pool_info,
                 "driver": engine.driver,
