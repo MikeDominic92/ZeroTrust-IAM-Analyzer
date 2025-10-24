@@ -268,6 +268,79 @@ Please follow the established coding standards and include appropriate tests for
 
 ## Documentation
 
+### Project Documentation Structure
+
+This project uses a comprehensive documentation system located in the `claudedocs/` directory, designed to support crash recovery, knowledge preservation, and project continuity.
+
+#### Directory Organization
+
+```
+claudedocs/
+├── analysis/          # Security analysis findings and IAM policy reviews
+├── tasks/             # TODO.md and granular task tracking
+├── decisions/         # Architecture Decision Records (ADRs)
+└── progress/          # Session logs, summaries, and progress tracking
+```
+
+#### Key Documentation Files
+
+**High-Level Overview:**
+- [Executive Summary](claudedocs/analysis/00-executive-summary.md): Business value and project overview
+- [Architecture](claudedocs/architecture.md): System design and component responsibilities
+- [Roadmap](claudedocs/roadmap.md): Development phases and timeline
+
+**Task Management:**
+- [TODO.md](claudedocs/tasks/TODO.md): Master task list with 31 tasks across 4 phases
+- [PROGRESS.md](claudedocs/progress/PROGRESS.md): Overall project completion metrics
+
+**Technical Analysis:**
+- [Zero Trust Principles](claudedocs/analysis/zero-trust-principles.md): Core security principles
+- [IAM Analysis Methodology](claudedocs/analysis/iam-analysis-methodology.md): Analysis approach
+- [Threat Model](claudedocs/analysis/threat-model.md): Security threats and mitigations
+- [Compliance Requirements](claudedocs/analysis/compliance-requirements.md): Regulatory standards
+
+**Development Guides:**
+- [Development Setup](claudedocs/guides/development-setup.md): Environment configuration
+- [Testing Strategy](claudedocs/guides/testing-strategy.md): Testing approach and standards
+- [Contribution Guidelines](claudedocs/guides/contribution-guidelines.md): Collaboration standards
+
+**Architecture Decisions:**
+- [ADR 001: Documentation Structure](claudedocs/decisions/001-documentation-structure.md): Documentation organization rationale
+- [ADR 002: Commit Strategy](claudedocs/decisions/002-commit-strategy.md): Crash recovery commit approach
+
+**Progress Tracking:**
+- [Session Log](claudedocs/progress/session-log.md): Chronological work tracking across all sessions
+- [Session Summaries](claudedocs/progress/): Comprehensive session reviews (e.g., session-1-summary.md)
+
+#### Crash Recovery Strategy
+
+This project implements a robust crash recovery mechanism to prevent work loss during interruptions:
+
+**Commit Strategy:**
+- **Rule**: Commit after every completed task (see [ADR 002](claudedocs/decisions/002-commit-strategy.md))
+- **Format**: `[Task] Brief description` with details and TODO.md reference
+- **Benefit**: Maximum 1 task worth of work lost on crash (typically <1 hour)
+- **Rollback**: Granular rollback capability to any task completion state
+
+**Session Continuity:**
+- **Session Logs**: Track all development sessions with goals, work completed, and next steps
+- **Session Summaries**: Comprehensive reviews of major accomplishments per session
+- **Progress Tracking**: Regular updates to PROGRESS.md and TODO.md status
+
+**Recovery Procedure:**
+1. Check `git log --oneline -10` to see recent commits
+2. Review TODO.md to identify last completed task
+3. Read session-log.md to understand session context
+4. Resume from next pending task
+
+**Documentation Philosophy:**
+- Knowledge preservation over minimal documentation
+- Structured organization for rapid information retrieval
+- Version-controlled alongside code
+- Human and AI agent accessible
+
+### Additional Documentation
+
 - [Architecture Overview](architecture-overview.md)
 - [Project Structure](project-structure.md)
 - [Implementation Plan](implementation-plan.md)
