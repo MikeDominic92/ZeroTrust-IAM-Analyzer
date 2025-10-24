@@ -46,7 +46,7 @@ The ZeroTrust IAM Analyzer exhibits a **significant gap between architectural vi
 The fundamental analysis engine that parses cloud IAM policies and generates Zero Trust scores is completely absent. Without this, the product cannot deliver its core value proposition.
 
 **Missing Components**:
-- Policy parsing logic for Azure AD, GCP IAM, AWS IAM
+- Policy parsing logic for Google Workspace, GCP IAM, AWS IAM
 - Zero Trust tenet evaluation algorithms (7 tenets)
 - Scoring calculation engine (0-100 scale)
 - Recommendation generation based on gaps
@@ -64,7 +64,7 @@ The fundamental analysis engine that parses cloud IAM policies and generates Zer
 **Dependencies**: Cloud provider SDK integrations, policy models
 
 **Acceptance Criteria**:
-- Analyze Azure AD tenant and produce Zero Trust score
+- Analyze Google Workspace tenant and produce Zero Trust score
 - Identify 20+ common security misconfigurations
 - Generate prioritized recommendations with remediation steps
 - Score accuracy validated against manual assessments (85%+ correlation)
@@ -79,11 +79,11 @@ No integration with cloud provider APIs exists, preventing the application from 
 **Missing Components**:
 ```python
 # backend/app/integrations/azure.py - MISSING
-class AzureIntegration:
+class GCPIntegration:
     def authenticate(self, tenant_id, credentials) -> bool: pass
-    def list_users(self) -> List[AzureUser]: pass
-    def list_roles(self) -> List[AzureRole]: pass
-    def list_permissions(self) -> List[AzurePermission]: pass
+    def list_users(self) -> List[GCPUser]: pass
+    def list_roles(self) -> List[GCPRole]: pass
+    def list_permissions(self) -> List[GCPPermission]: pass
     def list_conditional_access_policies(self) -> List[ConditionalAccessPolicy]: pass
     def get_mfa_status(self) -> Dict: pass
 
@@ -127,7 +127,7 @@ botocore = "^1.34.0"
 **Estimated Effort**: 2-3 weeks (80-120 hours) per cloud provider
 
 **Acceptance Criteria**:
-- Authenticate with Azure AD using service principal
+- Authenticate with Google Workspace using service principal
 - Retrieve all IAM users, roles, permissions from tenant
 - Authenticate with GCP using service account
 - Retrieve all IAM bindings and organization policies
@@ -692,7 +692,7 @@ class CredentialEncryption:
 
 **Status**: 🔴 0% Complete
 
-**Recommendation**: Terraform for AWS/GCP/Azure deployment
+**Recommendation**: Terraform for AWS/GCP/GCP deployment
 **Estimated Effort**: 2 weeks (80 hours)
 
 ### P3-04: No Monitoring and Alerting
@@ -911,15 +911,15 @@ class CredentialEncryption:
 
 ### Phase 2: Core Functionality (Weeks 3-6)
 
-**Goal**: Close remaining P1 gaps for Azure-only MVP
+**Goal**: Close remaining P1 gaps for GCP-only MVP
 
-6. P1-02: Azure AD integration (2 weeks)
-7. P1-01: Analysis engine (Azure only) (3 weeks)
+6. P1-02: Google Workspace integration (2 weeks)
+7. P1-01: Analysis engine (GCP only) (3 weeks)
 8. P1-07: Scoring algorithm (4-5 tenets) (2 weeks)
 9. P1-08: Recommendation engine (1 week)
 10. P1-12: Credential management (1 week)
 
-**Outcome**: Can analyze Azure tenants and generate scores
+**Outcome**: Can analyze GCP tenants and generate scores
 
 ### Phase 3: User Experience (Weeks 7-10)
 
@@ -970,12 +970,12 @@ The ZeroTrust IAM Analyzer faces **47 identified gaps across 5 priority levels**
 **Key Insights**:
 1. **Architecture is sound** - gaps are implementation, not design
 2. **Critical path is clear** - P1 gaps must close before P2-P3
-3. **MVP is achievable** - focusing on Azure-only reduces scope by 60%
+3. **MVP is achievable** - focusing on GCP-only reduces scope by 60%
 4. **Systematic approach required** - B-MAD Method v6 recommended
 
 **Recommended Approach**:
 - Focus on P1 gaps first (12 items)
-- Implement Azure-only MVP (defer GCP/AWS)
+- Implement GCP-only MVP (defer GCP/AWS)
 - Build testing alongside features (not after)
 - Use B-MAD Method v6 for structured development
 

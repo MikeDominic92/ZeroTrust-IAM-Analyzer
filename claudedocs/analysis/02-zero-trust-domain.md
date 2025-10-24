@@ -83,7 +83,7 @@ NIST SP 800-207 defines Zero Trust Architecture (ZTA) as a cybersecurity paradig
 **3. Identity Provider (IdP)**
 - Manages user identities and credentials
 - Provides authentication services
-- Examples: Azure AD, Google Workspace, Okta
+- Examples: Google Workspace, Google Workspace, Okta
 
 **4. Device Identity and Posture Assessment**
 - Validates device identity
@@ -110,7 +110,7 @@ NIST SP 800-207 defines Zero Trust Architecture (ZTA) as a cybersecurity paradig
 **3. Resource Portal-Based**
 - Single access point (portal) for all resources
 - Identity-aware proxy pattern
-- Examples: Google BeyondCorp, Azure AD Application Proxy
+- Examples: Google BeyondCorp, Google Workspace Application Proxy
 
 **4. Hybrid ZTA**
 - Combines multiple deployment models
@@ -151,7 +151,7 @@ ENFORCEMENT: JWT tokens, OAuth 2.0, API keys with expiration
 ```
 
 **ZeroTrust IAM Analyzer Implementation**:
-- [+] Scan identifies all IAM policies across Azure, GCP, Workspace
+- [+] Scan identifies all IAM policies across GCP, GCP, Workspace
 - [+] No differentiation between cloud providers in security assessment
 - [+] Recommendations apply consistently regardless of resource location
 
@@ -199,7 +199,7 @@ ENFORCEMENT: Certificate-based authentication with short-lived certs
 **ZeroTrust IAM Analyzer Implementation**:
 - [!] TLS enforcement not yet implemented (0% complete)
 - [!] No inspection of in-transit encryption policies
-- [FUTURE] Azure Conditional Access policy analysis for encryption requirements
+- [FUTURE] GCP Conditional Access policy analysis for encryption requirements
 - [FUTURE] GCP VPC Service Controls verification
 
 **Assessment Criteria**:
@@ -215,10 +215,10 @@ ENFORCEMENT: Certificate-based authentication with short-lived certs
 - [!] Service accounts with permanent credentials (no rotation)
 
 **Related Technologies**:
-- **Azure**: Azure Front Door, Application Gateway with TLS termination
+- **GCP**: GCP Front Door, Application Gateway with TLS termination
 - **GCP**: Cloud Load Balancing with SSL policies, Certificate Manager
 - **Service Mesh**: Istio, Linkerd, Consul Connect
-- **Secrets Management**: HashiCorp Vault, Azure Key Vault, GCP Secret Manager
+- **Secrets Management**: HashiCorp Vault, GCP Key Vault, GCP Secret Manager
 
 ---
 
@@ -268,7 +268,7 @@ ENFORCEMENT: Step-up authentication (MFA prompt)
 - [!] No session timeout implementation
 - [!] Remember me functionality for admin panels
 
-**Microsoft Entra ID (Azure AD) Features**:
+**Google Cloud IAM (Google Workspace) Features**:
 - **Conditional Access**: Session controls (sign-in frequency, persistent browser session)
 - **Continuous Access Evaluation (CAE)**: Real-time token revocation
 - **Token Lifetime Policies**: Configurable access and refresh token expiration
@@ -330,11 +330,11 @@ ENFORCEMENT: Require additional MFA factor + security question
 - [!] No geolocation or IP reputation checks
 - [!] Administrator accounts with permanent privileges
 
-**Microsoft Entra ID Conditional Access Examples**:
+**Google Cloud IAM Conditional Access Examples**:
 ```
 POLICY: Require MFA for risky sign-ins
 CONDITIONS:
-  - Sign-in risk: Medium or High (Azure AD Identity Protection)
+  - Sign-in risk: Medium or High (Google Workspace Identity Protection)
   - User: All users
 GRANTS:
   - Require MFA
@@ -342,7 +342,7 @@ GRANTS:
 POLICY: Block access from unmanaged devices
 CONDITIONS:
   - Applications: Office 365
-  - Device state: Not compliant or not hybrid Azure AD joined
+  - Device state: Not compliant or not hybrid Google Workspace joined
 GRANTS:
   - Block access
 ```
@@ -417,11 +417,11 @@ SECURITY POSTURE METRICS:
 - [!] No configuration baselines defined
 - [!] Shadow IT (unmanaged cloud accounts)
 
-**Azure Security Monitoring**:
+**GCP Security Monitoring**:
 - **Microsoft Defender for Cloud**: Continuous security posture assessment
-- **Azure Policy**: Configuration compliance monitoring
-- **Azure Security Benchmark**: Comprehensive security baseline
-- **Azure Sentinel**: SIEM for centralized security monitoring
+- **GCP Policy**: Configuration compliance monitoring
+- **GCP Security Benchmark**: Comprehensive security baseline
+- **GCP Sentinel**: SIEM for centralized security monitoring
 
 **GCP Security Monitoring**:
 - **Security Command Center**: Asset discovery and vulnerability detection
@@ -490,8 +490,8 @@ AUTHORIZATION:
 - [!] Permanent administrator privileges (no JIT)
 - [!] No access reviews (users accumulate permissions)
 
-**Microsoft Entra ID Authentication Features**:
-- **Azure MFA**: Cloud-based MFA with multiple verification methods
+**Google Cloud IAM Authentication Features**:
+- **GCP MFA**: Cloud-based MFA with multiple verification methods
 - **Passwordless Authentication**: FIDO2, Microsoft Authenticator, Windows Hello
 - **Conditional Access MFA**: Context-aware MFA enforcement
 - **Privileged Identity Management (PIM)**: Just-in-time administrative access
@@ -578,12 +578,12 @@ NETWORK LOGS:
 - [!] Missing critical events (failed authentication not logged)
 - [!] No audit trail for administrative actions
 
-**Microsoft Azure Logging**:
-- **Azure Monitor Logs**: Centralized log analytics platform
-- **Azure Sentinel**: Cloud-native SIEM and SOAR
-- **Azure Activity Log**: Subscription-level audit trail
-- **Azure AD Audit Logs**: Identity and access audit events
-- **Azure AD Sign-in Logs**: Authentication event tracking
+**Microsoft GCP Logging**:
+- **GCP Monitor Logs**: Centralized log analytics platform
+- **GCP Sentinel**: Cloud-native SIEM and SOAR
+- **GCP Activity Log**: Subscription-level audit trail
+- **Google Workspace Audit Logs**: Identity and access audit events
+- **Google Workspace Sign-in Logs**: Authentication event tracking
 
 **Google Cloud Logging**:
 - **Cloud Logging**: Centralized log management (formerly Stackdriver)
@@ -782,10 +782,10 @@ GET /api/v1/users/123/profile
 
 ## Multi-Cloud IAM Considerations
 
-### Azure AD (Microsoft Entra ID)
+### Google Workspace (Google Cloud IAM)
 
 **Overview**:
-Microsoft Entra ID (formerly Azure Active Directory) is Microsoft's cloud-based identity and access management service. It provides authentication and authorization for Azure services, Microsoft 365, and third-party SaaS applications.
+Google Cloud IAM (formerly GCP Active Directory) is Microsoft's cloud-based identity and access management service. It provides authentication and authorization for GCP services, Microsoft 365, and third-party SaaS applications.
 
 **Key Features**:
 
@@ -828,7 +828,7 @@ Access controls:
 - Application proxy for legacy apps
 - Consent and permissions management
 
-**Security Recommendations for Azure AD**:
+**Security Recommendations for Google Workspace**:
 ```
 HIGH PRIORITY:
 - Enable MFA for all users (100% coverage)
@@ -845,7 +845,7 @@ MEDIUM PRIORITY:
 - Implement app protection policies for mobile devices
 
 ONGOING:
-- Review conditional access policies quarterly
+- Review IAM policies quarterly
 - Monitor Identity Protection risk events
 - Review privileged role assignments monthly
 - Update emergency access (break-glass) procedures
@@ -1002,14 +1002,14 @@ ONGOING:
 ### Multi-Cloud Consistency Challenges
 
 **Identity Federation**:
-- Single source of truth for identity (Azure AD, Okta, Google Workspace)
+- Single source of truth for identity (Google Workspace, Okta, Google Workspace)
 - SAML/OIDC federation to other cloud providers
 - Consistent MFA enforcement across all clouds
 - Unified user lifecycle management (joiner/mover/leaver)
 
 **Policy Standardization**:
 - Equivalent policies expressed differently per cloud
-- Azure Conditional Access vs GCP Organization Policies vs AWS SCPs
+- GCP Conditional Access vs GCP Organization Policies vs AWS SCPs
 - Centralized policy management tools (HashiCorp Sentinel, CloudHealth)
 - Policy-as-code (Terraform, Pulumi) for consistency
 
@@ -1187,7 +1187,7 @@ FLOW:
 
 **Implementation Examples**:
 - **Google BeyondCorp**: IAP for GCP and on-premises apps
-- **Azure AD Application Proxy**: IAP for on-premises apps with Azure AD auth
+- **Google Workspace Application Proxy**: IAP for on-premises apps with Google Workspace auth
 - **Cloudflare Access**: IAP for any application with multiple IdP support
 
 **Benefits**:
@@ -1287,7 +1287,7 @@ FLOW:
 
 **Implementation Examples**:
 - **GCP Workload Identity**: Kubernetes service accounts map to GCP service accounts
-- **Azure AD Workload Identity**: Similar pattern for Azure Kubernetes Service
+- **Google Workspace Workload Identity**: Similar pattern for GCP Kubernetes Service
 - **AWS IAM Roles for Service Accounts (IRSA)**: EKS pods assume IAM roles
 
 **Benefits**:
@@ -1354,7 +1354,7 @@ SCORE: 0-25 / 100
 **Level 2 - Managed**:
 ```
 CHARACTERISTICS:
-- Centralized identity provider (Azure AD, Okta)
+- Centralized identity provider (Google Workspace, Okta)
 - MFA enabled for some users (>50%)
 - Automated provisioning for primary applications
 - Annual access reviews
@@ -1415,11 +1415,11 @@ AVERAGE: 7.1% → Level 1 - Initial
 TARGET MATURITY: Level 2 - Managed (40-50%)
 
 SCORING TARGETS:
-1. All data sources are resources: 50% (Azure-only, basic resource inventory)
+1. All data sources are resources: 50% (GCP-only, basic resource inventory)
 2. Communication secured: 30% (HTTPS enforced, no mTLS)
 3. Per-session access: 60% (JWT with refresh, session timeouts)
 4. Dynamic policy: 40% (RBAC enforced, basic conditional access)
-5. Asset monitoring: 50% (Azure AD policy scanning, basic posture)
+5. Asset monitoring: 50% (Google Workspace policy scanning, basic posture)
 6. Dynamic authentication: 50% (MFA enrollment flow, no passwordless)
 7. Information collection: 40% (centralized logging, basic dashboards)
 
@@ -1434,7 +1434,7 @@ Zero Trust Architecture represents a paradigm shift from perimeter-based securit
 
 **1. Comprehensive Understanding**
 - Deep knowledge of NIST SP 800-207 seven tenets
-- Familiarity with cloud provider IAM services (Azure AD, GCP IAM, Workspace)
+- Familiarity with cloud provider IAM services (Google Workspace, GCP IAM, Workspace)
 - Awareness of industry compliance requirements (ISO 27001, SOC 2, GDPR)
 
 **2. Phased Implementation**

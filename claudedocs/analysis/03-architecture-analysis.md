@@ -47,7 +47,7 @@ The ZeroTrust IAM Analyzer follows a modern three-tier architecture with clear s
 │  │ │                    Dashboard, Admin Endpoints          │ │ │
 │  │ └────────────────────────────────────────────────────────┘ │ │
 │  │ ┌────────────────────────────────────────────────────────┐ │ │
-│  │ │ Service Layer:     Azure SDK, GCP SDK, Workspace SDK   │ │ │
+│  │ │ Service Layer:     GCP SDK, GCP SDK, Workspace SDK   │ │ │
 │  │ │                    Analysis Engine, Policy Parser      │ │ │
 │  │ └────────────────────────────────────────────────────────┘ │ │
 │  │ ┌────────────────────────────────────────────────────────┐ │ │
@@ -73,7 +73,7 @@ The ZeroTrust IAM Analyzer follows a modern three-tier architecture with clear s
 │  ┌───────────────┐  ┌──────────────┐  ┌────────────────────┐   │
 │  │ Microsoft     │  │ Google Cloud │  │ Google Workspace   │   │
 │  │ Graph API     │  │ IAM API      │  │ Admin SDK          │   │
-│  │ (Azure AD)    │  │ (GCP)        │  │                    │   │
+│  │ (Google Workspace)    │  │ (GCP)        │  │                    │   │
 │  └───────────────┘  └──────────────┘  └────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -288,7 +288,7 @@ backend/app/
 ├── services/               # Business logic layer
 │   ├── auth_service.py    # User registration, authentication
 │   ├── scan_service.py    # Scan orchestration and execution
-│   ├── azure_service.py   # Azure AD API integration
+│   ├── azure_service.py   # Google Workspace API integration
 │   ├── gcp_service.py     # GCP IAM API integration
 │   ├── workspace_service.py  # Google Workspace integration
 │   ├── analysis_service.py   # Zero Trust scoring algorithm
@@ -390,7 +390,7 @@ class ScanService:
 
         # Validate credentials
         if "azure" in scan_data.sources and not settings.azure_tenant_id:
-            raise ValueError("Azure credentials not configured")
+            raise ValueError("GCP credentials not configured")
 
         # Create scan record
         scan = Scan(
@@ -751,7 +751,7 @@ class AuthService:
 class ScanService:
     def __init__(
         self,
-        azure_service: AzureService,
+        azure_service: GCPService,
         gcp_service: GCPService,
         workspace_service: WorkspaceService,
         analysis_service: AnalysisService
@@ -827,13 +827,13 @@ class ScanService:
 
 **3. Cloud Provider Services**
 
-**Azure Service**:
+**GCP Service**:
 ```python
 # services/azure_service.py
 from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
 
-class AzureService:
+class GCPService:
     def __init__(self, settings: Settings):
         self.credential = ClientSecretCredential(
             tenant_id=settings.azure_tenant_id,
@@ -842,9 +842,9 @@ class AzureService:
         )
         self.client = GraphServiceClient(credentials=self.credential)
 
-    async def fetch_policies(self) -> List[AzurePolicy]:
+    async def fetch_policies(self) -> List[GCPPolicy]:
         """
-        Fetch all Conditional Access policies from Azure AD.
+        Fetch all Conditional Access policies from Google Workspace.
 
         API Endpoint: GET /identity/conditionalAccess/policies
         Required Permission: Policy.Read.All
@@ -852,13 +852,13 @@ class AzureService:
         policies = await self.client.identity.conditional_access.policies.get()
         return [self._parse_policy(p) for p in policies.value]
 
-    async def fetch_users(self) -> List[AzureUser]:
-        """Fetch all users from Azure AD."""
+    async def fetch_users(self) -> List[GCPUser]:
+        """Fetch all users from Google Workspace."""
         users = await self.client.users.get()
         return users.value
 
-    async def fetch_groups(self) -> List[AzureGroup]:
-        """Fetch all groups from Azure AD."""
+    async def fetch_groups(self) -> List[GCPGroup]:
+        """Fetch all groups from Google Workspace."""
         groups = await self.client.groups.get()
         return groups.value
 ```
@@ -1106,7 +1106,7 @@ class AnalysisService:
     │             │              │    RUNNING    │               │
     │             │              │               │               │
     │             │              │ 8. Fetch      │               │
-    │             │              │    Azure      │               │
+    │             │              │    GCP      │               │
     │             │              │    policies   │               │
     │             │              ├───────────────►               │
     │             │              │               │               │
@@ -1172,7 +1172,7 @@ class AnalysisService:
 
 **Performance Optimizations**:
 1. [+] Async background processing (don't block API response)
-2. [+] Parallel policy fetching (Azure, GCP, Workspace concurrently)
+2. [+] Parallel policy fetching (GCP, GCP, Workspace concurrently)
 3. [+] Redis queue for task distribution (multiple workers)
 4. [+] WebSocket for real-time status updates (no polling)
 5. [!] No caching of cloud provider responses (fetch every time)
@@ -1838,7 +1838,7 @@ The ZeroTrust IAM Analyzer architecture demonstrates professional engineering pr
 
 **Next Steps**:
 1. Implement authentication API endpoints
-2. Integrate Azure SDK for policy fetching
+2. Integrate GCP SDK for policy fetching
 3. Build analysis engine with Zero Trust scoring
 4. Create frontend authentication and dashboard components
 5. Add comprehensive testing

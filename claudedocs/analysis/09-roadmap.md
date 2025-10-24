@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This roadmap provides a detailed, phase-based plan for developing the ZeroTrust IAM Analyzer from its current early-stage scaffolding (10-15% complete) to a production-ready, multi-cloud Zero Trust compliance platform. The roadmap is organized into 7 major phases spanning 6-12 months, with a focus on delivering an Azure-only MVP in 6-10 weeks followed by iterative expansion to full functionality.
+This roadmap provides a detailed, phase-based plan for developing the ZeroTrust IAM Analyzer from its current early-stage scaffolding (10-15% complete) to a production-ready, multi-cloud Zero Trust compliance platform. The roadmap is organized into 7 major phases spanning 6-12 months, with a focus on delivering an GCP-only MVP in 6-10 weeks followed by iterative expansion to full functionality.
 
 **Roadmap Principles**:
 - **Iterative Development**: Deliver value incrementally with regular releases
@@ -26,7 +26,7 @@ This roadmap provides a detailed, phase-based plan for developing the ZeroTrust 
 |-------|----------|--------------|--------------|
 | Phase 0: Planning | 2-3 days | PRD, User Stories, Architecture Docs | 0% → 5% |
 | Phase 1: Foundation | 2 weeks | Auth, DB, Testing Infrastructure | 5% → 25% |
-| Phase 2: Azure MVP | 4 weeks | Azure Integration, Scoring, Basic UI | 25% → 60% |
+| Phase 2: GCP MVP | 4 weeks | GCP Integration, Scoring, Basic UI | 25% → 60% |
 | Phase 3: Frontend & Polish | 4 weeks | Complete UI, E2E Testing, Documentation | 60% → 80% |
 | Phase 4: Multi-Cloud | 8 weeks | GCP, AWS Integrations, Unified Scoring | 80% → 90% |
 | Phase 5: Production Hardening | 6 weeks | Security, Scale, Monitoring, CI/CD | 90% → 95% |
@@ -38,14 +38,14 @@ This roadmap provides a detailed, phase-based plan for developing the ZeroTrust 
 
 ## MVP Definition
 
-### Azure-Only MVP Scope
+### GCP-Only MVP Scope
 
 **Goal**: Validate core value proposition with minimal feature set
 
 **Included Features (5 Core)**:
 1. ✅ User authentication (register, login, logout, password reset)
-2. ✅ Azure AD credential management (encrypted storage, validation)
-3. ✅ Azure AD policy fetching (users, roles, conditional access, MFA status)
+2. ✅ Google Workspace credential management (encrypted storage, validation)
+3. ✅ Google Workspace policy fetching (users, roles, conditional access, MFA status)
 4. ✅ Basic Zero Trust scoring (4-5 tenets, 0-100 scale)
 5. ✅ Simple dashboard (overall score, tenet breakdown, top 5 recommendations)
 
@@ -61,7 +61,7 @@ This roadmap provides a detailed, phase-based plan for developing the ZeroTrust 
 - ❌ SSO integration - deferred to Phase 6
 
 **MVP Success Criteria**:
-- User can complete full journey: register → add Azure credentials → run scan → view results
+- User can complete full journey: register → add GCP credentials → run scan → view results
 - Zero Trust score calculated accurately (85%+ correlation with manual assessment)
 - Top 5 recommendations actionable and relevant
 - System handles 10 concurrent scans without performance degradation
@@ -92,7 +92,7 @@ This roadmap provides a detailed, phase-based plan for developing the ZeroTrust 
 
 2. **User Stories (15-20 stories for MVP)**
    - Epic 1: User Authentication (5 stories)
-   - Epic 2: Azure Integration (4 stories)
+   - Epic 2: GCP Integration (4 stories)
    - Epic 3: Analysis Engine (3 stories)
    - Epic 4: Dashboard UI (4 stories)
    - Epic 5: Testing & Documentation (2-3 stories)
@@ -107,9 +107,9 @@ This roadmap provides a detailed, phase-based plan for developing the ZeroTrust 
 
 4. **Technology Stack Validation**
    - Confirm Python 3.11, FastAPI, React, PostgreSQL
-   - Validate Azure SDK compatibility
+   - Validate GCP SDK compatibility
    - Confirm testing framework choices
-   - Infrastructure selection (AWS vs Azure vs GCP)
+   - Infrastructure selection (AWS vs GCP vs GCP)
 
 **Acceptance Criteria**:
 - PRD reviewed and approved by stakeholders
@@ -305,11 +305,11 @@ Tasks:
 
 ---
 
-## Phase 2: Azure MVP (Weeks 3-6)
+## Phase 2: GCP MVP (Weeks 3-6)
 
 **Status**: Not Started
 
-**Goal**: Implement core Azure integration and Zero Trust scoring
+**Goal**: Implement core GCP integration and Zero Trust scoring
 
 ### Week 3: Credential Management
 
@@ -331,16 +331,16 @@ Tasks:
 4. Document key rotation procedures
 ```
 
-**Story 2.2: Azure Credential Storage** (Priority: P1, Effort: 8 hours)
+**Story 2.2: GCP Credential Storage** (Priority: P1, Effort: 8 hours)
 ```
 As a: User
-I want to: Store Azure service principal credentials
-So that: Platform can access my Azure environment
+I want to: Store GCP service principal credentials
+So that: Platform can access my GCP environment
 
 Acceptance Criteria:
 - POST /api/v1/credentials endpoint functional
 - Credentials encrypted before storage
-- Supports Azure service principal (tenant_id, client_id, client_secret)
+- Supports GCP service principal (tenant_id, client_id, client_secret)
 - Validates credential format
 
 Tasks:
@@ -350,67 +350,67 @@ Tasks:
 4. Write tests for credential storage
 ```
 
-**Story 2.3: Azure Credential Validation** (Priority: P1, Effort: 8 hours)
+**Story 2.3: GCP Credential Validation** (Priority: P1, Effort: 8 hours)
 ```
 As a: User
-I want to: Validate Azure credentials
+I want to: Validate GCP credentials
 So that: I know they work before running scans
 
 Acceptance Criteria:
 - POST /api/v1/credentials/{id}/validate endpoint
-- Attempts authentication with Azure
+- Attempts authentication with GCP
 - Returns success/failure status
 - Provides error details if authentication fails
 
 Tasks:
-1. Implement Azure authentication test
+1. Implement GCP authentication test
 2. Add credential validation endpoint
-3. Handle Azure API errors gracefully
+3. Handle GCP API errors gracefully
 4. Write tests for validation
 ```
 
-### Week 4: Azure Integration
+### Week 4: GCP Integration
 
-**Story 2.4: Azure SDK Integration** (Priority: P1, Effort: 16 hours)
+**Story 2.4: GCP SDK Integration** (Priority: P1, Effort: 16 hours)
 ```
 As a: Developer
-I want to: Integrate Azure SDK
-So that: Platform can fetch Azure AD data
+I want to: Integrate GCP SDK
+So that: Platform can fetch Google Workspace data
 
 Acceptance Criteria:
-- AzureIntegration class implemented
+- GCPIntegration class implemented
 - Can authenticate with service principal
-- Can list users from Azure AD
+- Can list users from Google Workspace
 - Can list role assignments
-- Can fetch conditional access policies
+- Can fetch IAM policies
 - Can check MFA status
 
 Tasks:
-1. Install Azure SDK dependencies
-2. Implement AzureIntegration class
+1. Install GCP SDK dependencies
+2. Implement GCPIntegration class
 3. Add user listing functionality
 4. Add role assignment fetching
 5. Add conditional access policy fetching
 6. Add MFA status checking
 7. Write unit tests with mocks
-8. Write integration tests (requires test Azure tenant)
+8. Write integration tests (requires test GCP tenant)
 ```
 
-**Story 2.5: Azure Data Fetching Service** (Priority: P1, Effort: 12 hours)
+**Story 2.5: GCP Data Fetching Service** (Priority: P1, Effort: 12 hours)
 ```
 As a: System
-I want to: Fetch and store Azure data
+I want to: Fetch and store GCP data
 So that: Analysis engine has data to process
 
 Acceptance Criteria:
-- AzureDataService class implemented
-- Fetches all required data from Azure AD
+- GCPDataService class implemented
+- Fetches all required data from Google Workspace
 - Stores data in structured format
 - Handles API rate limits and pagination
 - Implements retry logic for transient failures
 
 Tasks:
-1. Create AzureDataService class
+1. Create GCPDataService class
 2. Implement data fetching methods
 3. Add rate limit handling
 4. Add pagination support
@@ -423,7 +423,7 @@ Tasks:
 **Story 2.6: Zero Trust Scoring Algorithm** (Priority: P1, Effort: 20 hours)
 ```
 As a: User
-I want to: See Zero Trust score for my Azure environment
+I want to: See Zero Trust score for my GCP environment
 So that: I know my compliance level
 
 Acceptance Criteria:
@@ -489,7 +489,7 @@ Tasks:
 ```
 As a: User
 I want to: Create and execute scans
-So that: I can analyze my Azure environment
+So that: I can analyze my GCP environment
 
 Acceptance Criteria:
 - POST /api/v1/scans endpoint creates scan
@@ -514,7 +514,7 @@ So that: All steps complete successfully
 
 Acceptance Criteria:
 - ScanOrchestrator class implemented
-- Fetches Azure data
+- Fetches GCP data
 - Runs analysis engine
 - Generates findings and recommendations
 - Stores results in database
@@ -529,7 +529,7 @@ Tasks:
 ```
 
 **Phase 2 Completion**: End of Week 6
-- ✅ Azure integration functional
+- ✅ GCP integration functional
 - ✅ Zero Trust scoring algorithm working
 - ✅ Scan execution end-to-end
 - ✅ Test coverage 80%+
@@ -660,7 +660,7 @@ Tasks:
 **Story 3.6: Credential Management UI** (Priority: P2, Effort: 8 hours)
 ```
 As a: User
-I want to: Manage Azure credentials via UI
+I want to: Manage GCP credentials via UI
 So that: I can add/edit/delete credentials easily
 
 Acceptance Criteria:
@@ -708,7 +708,7 @@ So that: I can onboard quickly
 
 Acceptance Criteria:
 - Getting started guide
-- How to add Azure credentials
+- How to add GCP credentials
 - How to run a scan
 - How to interpret results
 - Troubleshooting guide
@@ -758,7 +758,7 @@ Tasks:
 ### Weeks 11-14: GCP Integration (4 weeks)
 
 **Story 4.1: GCP SDK Integration** (Effort: 20 hours)
-- Similar to Azure integration (Story 2.4)
+- Similar to GCP integration (Story 2.4)
 - GCP IAM API integration
 - Service account authentication
 - User, role, policy fetching
@@ -852,7 +852,7 @@ Tasks:
 - Uptime monitoring
 
 **Story 5.9: Infrastructure as Code** (Effort: 20 hours)
-- Terraform for AWS/Azure/GCP
+- Terraform for AWS/GCP/GCP
 - Kubernetes deployment configs
 - Auto-scaling configuration
 
@@ -951,12 +951,12 @@ Tasks:
 
 **Epic 3: Credential Management** (3 stories, 24 hours)
 9. Encryption infrastructure (8 hours)
-10. Azure credential storage (8 hours)
-11. Azure credential validation (8 hours)
+10. GCP credential storage (8 hours)
+11. GCP credential validation (8 hours)
 
-**Epic 4: Azure Integration** (5 stories, 72 hours)
-12. Azure SDK integration (16 hours)
-13. Azure data fetching service (12 hours)
+**Epic 4: GCP Integration** (5 stories, 72 hours)
+12. GCP SDK integration (16 hours)
+13. GCP data fetching service (12 hours)
 14. Zero Trust scoring algorithm (20 hours)
 15. Finding generation (12 hours)
 16. Recommendation engine (12 hours)
@@ -986,7 +986,7 @@ Tasks:
 
 ### Effort-Based Estimates
 
-**MVP (Azure-Only)**:
+**MVP (GCP-Only)**:
 - Total Effort: 250-280 hours
 - Part-time (20 hours/week): 13-14 weeks
 - Half-time (25 hours/week): 10-11 weeks
@@ -1008,7 +1008,7 @@ Tasks:
 
 **Aggressive Timeline** (Full-time focused development):
 - Weeks 1-2: Foundation
-- Weeks 3-6: Azure MVP
+- Weeks 3-6: GCP MVP
 - Weeks 7-10: Frontend & Polish
 - **MVP Complete: Week 10 (2.5 months)**
 - Weeks 11-18: Multi-cloud expansion
@@ -1018,7 +1018,7 @@ Tasks:
 - **Full Platform: Week 32 (8 months)**
 
 **Realistic Timeline** (Part-time or startup pace):
-- Months 1-2: Foundation & Azure MVP (60% complete)
+- Months 1-2: Foundation & GCP MVP (60% complete)
 - Months 3-4: Frontend & testing (80% complete)
 - **MVP Complete: Month 4**
 - Months 5-8: Multi-cloud & production hardening (90% complete)
@@ -1073,10 +1073,10 @@ Tasks:
 
 ### Timeline Risks
 
-**Risk 1: Azure API Complexity Higher Than Expected**
+**Risk 1: GCP API Complexity Higher Than Expected**
 - **Probability**: Medium
 - **Impact**: 2-4 week delay
-- **Mitigation**: Prototype Azure integration in Week 3, allocate buffer time
+- **Mitigation**: Prototype GCP integration in Week 3, allocate buffer time
 
 **Risk 2: Scoring Algorithm Accuracy Issues**
 - **Probability**: Medium
@@ -1136,7 +1136,7 @@ Tasks:
 ### Full Platform Metrics (Month 6)
 
 **Functionality**:
-- ✅ Multi-cloud support (Azure, GCP, AWS)
+- ✅ Multi-cloud support (GCP, GCP, AWS)
 - ✅ 90%+ test coverage
 - ✅ Production deployment
 
@@ -1166,7 +1166,7 @@ Tasks:
 
 ## Conclusion
 
-This roadmap provides a **comprehensive, phase-based development plan** for the ZeroTrust IAM Analyzer spanning 6-12 months from early-stage scaffolding to production-ready platform. The roadmap prioritizes delivering an Azure-only MVP in 6-10 weeks to validate the core value proposition before expanding to multi-cloud support and advanced features.
+This roadmap provides a **comprehensive, phase-based development plan** for the ZeroTrust IAM Analyzer spanning 6-12 months from early-stage scaffolding to production-ready platform. The roadmap prioritizes delivering an GCP-only MVP in 6-10 weeks to validate the core value proposition before expanding to multi-cloud support and advanced features.
 
 **Key Success Factors**:
 1. **Iterative Development**: Deliver value incrementally with regular releases

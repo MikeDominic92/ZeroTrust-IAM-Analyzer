@@ -4,11 +4,11 @@ A comprehensive security analysis tool for evaluating identity and access manage
 
 ## Overview
 
-ZeroTrust IAM Analyzer analyzes Microsoft Entra ID conditional access policies and Google Cloud IAM security configurations to provide actionable security recommendations based on Zero Trust principles. The tool delivers security scoring, policy analysis, and automated remediation guidance through an intuitive web interface.
+ZeroTrust IAM Analyzer analyzes Google Cloud IAM policies and Google Workspace identity configurations to provide actionable security recommendations based on Zero Trust principles. The tool delivers security scoring, policy analysis, and automated remediation guidance through an intuitive web interface.
 
 ## Key Features
 
-- Multi-cloud analysis for Microsoft Entra ID and Google Cloud IAM
+- Security analysis for Google Cloud IAM and Google Workspace
 - Zero Trust security scoring (0-100 scale)
 - Actionable remediation recommendations
 - Interactive dashboard with real-time visualizations
@@ -24,7 +24,7 @@ The application consists of three main components:
 2. **Backend**: FastAPI Python application with PostgreSQL database
 3. **Infrastructure**: Google Cloud Platform services (Cloud Run, Cloud SQL, Memorystore)
 
-The system integrates with external APIs including Microsoft Graph API, Google Cloud IAM API, and Google Workspace Admin SDK to collect and analyze security policies.
+The system integrates with external APIs including Google Cloud IAM API, and Google Workspace Admin SDK to collect and analyze security policies.
 
 ## Quick Start
 
@@ -91,10 +91,6 @@ Create a `.env` file in the project root:
 GCP_PROJECT_ID=your-gcp-project-id
 GCP_REGION=us-central1
 
-# Microsoft Entra ID Configuration
-AZURE_TENANT_ID=your-azure-tenant-id
-AZURE_CLIENT_ID=your-azure-client-id
-AZURE_CLIENT_SECRET=your-azure-client-secret
 
 # Database Configuration
 DATABASE_URL=postgresql://iam_user:password@localhost:5432/iam_analyzer
@@ -110,11 +106,6 @@ ENVIRONMENT=development
 
 ### Required API Permissions
 
-**Microsoft Entra ID:**
-- Policy.Read.All
-- Directory.Read.All
-- User.Read.All
-- AuditLog.Read.All
 
 **Google Cloud:**
 - iam.roles.list
@@ -198,7 +189,7 @@ Analyze policies:
 ```bash
 curl -X POST http://localhost:8000/api/v1/analyze \
   -H "Content-Type: application/json" \
-  -d '{"sources": ["azure", "gcp", "workspace"]}'
+  -d '{"sources": ["gcp", "workspace"]}'
 ```
 
 Get recommendations:
@@ -351,8 +342,8 @@ This project implements a robust crash recovery mechanism to prevent work loss d
 
 ## Troubleshooting
 
-**Authentication to Microsoft Entra ID fails**
-Verify your Azure AD app registration has the correct API permissions and that your client secret is valid and not expired.
+**Google Workspace authentication fails**
+Verify your Google Workspace service account has domain-wide delegation enabled and that your service account JSON key is valid.
 
 **Google Cloud API calls return permission errors**
 Ensure your service account has the required IAM roles and that the APIs are enabled in your GCP project.
@@ -368,4 +359,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-Built with Microsoft Graph API, Google Cloud Platform, FastAPI, and React. Thanks to the open source community for the tools and libraries that made this project possible.
+Built with Google Cloud Platform, FastAPI, and React. Thanks to the open source community for the tools and libraries that made this project possible.
