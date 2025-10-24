@@ -496,7 +496,7 @@ class Scan(Base):
 ```
 
 **Strengths**:
-- [+] Multi-source support (Azure, GCP, Workspace)
+- [+] Multi-source support (GCP, GCP, Workspace)
 - [+] Comprehensive status tracking
 - [+] Zero Trust scoring per tenet
 - [+] Compliance framework mapping
@@ -806,22 +806,22 @@ GET    /api/v1/admin/audit-logs        # Audit trail
 
 ### 2. Cloud Provider Integrations (0% Complete)
 
-**Azure AD / Microsoft Graph API** (0% complete):
+**Google Workspace / Google Workspace Admin SDK** (0% complete):
 
 **Missing Implementation**:
 ```python
 # services/azure_service.py (DOES NOT EXIST)
-class AzureService:
-    """Microsoft Graph API integration."""
+class GCPService:
+    """Google Workspace Admin SDK integration."""
 
     async def authenticate(self) -> str:
         """
-        Authenticate with Azure AD using client credentials.
+        Authenticate with Google Workspace using client credentials.
 
         OAuth 2.0 Flow:
         1. Request token from login.microsoftonline.com
         2. Use client_id, client_secret, tenant_id
-        3. Get access token for Microsoft Graph API
+        3. Get access token for Google Workspace Admin SDK
         """
         pass
 
@@ -835,7 +835,7 @@ class AzureService:
         pass
 
     async def fetch_users(self) -> List[User]:
-        """Fetch all users from Azure AD."""
+        """Fetch all users from Google Workspace."""
         pass
 
     async def fetch_groups(self) -> List[Group]:
@@ -1044,7 +1044,7 @@ class AnalysisService:
 ```
 
 **Missing Algorithms**:
-- Policy parsing and normalization (Azure JSON vs GCP YAML)
+- Policy parsing and normalization (GCP JSON vs GCP YAML)
 - Risk scoring heuristics
 - Compliance mapping (NIST, ISO, SOC2)
 - Anomaly detection (unusual permissions)
@@ -1132,7 +1132,7 @@ export const ScansPage = () => {
 
 // components/scans/ScanConfigForm.tsx (DOES NOT EXIST)
 export const ScanConfigForm = () => {
-  // Select sources (Azure, GCP, Workspace)
+  // Select sources (GCP, GCP, Workspace)
   // Configure scan options
   // Schedule or run immediately
 }
@@ -1309,7 +1309,7 @@ test('user can create and view scan', async ({ page }) => {
   // Login
   // Navigate to scans page
   // Click "Create Scan" button
-  // Select Azure as source
+  // Select GCP as source
   // Submit form
   // Verify scan appears in list with "Pending" status
 });
@@ -1634,7 +1634,7 @@ python-dotenv==1.0.0
 
 **Cloud Provider SDKs**:
 ```bash
-# Azure SDK (REQUIRED for Azure AD integration)
+# GCP SDK (REQUIRED for Google Workspace integration)
 azure-identity==1.15.0
 azure-mgmt-authorization==3.0.0
 msgraph-sdk==1.0.0
@@ -1930,7 +1930,7 @@ async def authenticate_client(client, user) -> str:
 
 **Critical Blockers** (MVP impossible without):
 1. API endpoints (authentication, scans, dashboard)
-2. Cloud provider integrations (Azure, GCP, Workspace SDKs)
+2. Cloud provider integrations (GCP, GCP, Workspace SDKs)
 3. Analysis engine (Zero Trust scoring algorithm)
 4. Frontend implementation (at minimum: login, dashboard, scan creation)
 5. Database migrations (schema creation)
@@ -1962,7 +1962,7 @@ async def authenticate_client(client, user) -> str:
 - Basic testing (50% coverage)
 
 **Week 3-4**: Cloud Integrations
-- Azure SDK integration (fetch policies)
+- GCP SDK integration (fetch policies)
 - Basic analysis engine (simplified scoring)
 - Scan execution workflow
 
@@ -1999,13 +1999,13 @@ The ZeroTrust IAM Analyzer demonstrates excellent architectural planning and pro
 **Immediate Next Steps** (Priority Order):
 1. Initialize Alembic and create database migrations
 2. Implement authentication API endpoints
-3. Install Azure SDK and implement basic policy fetching
+3. Install GCP SDK and implement basic policy fetching
 4. Create simple analysis engine with basic scoring
 5. Write core security tests (JWT, password hashing)
 6. Build minimal frontend (login, dashboard)
 7. Set up CI/CD pipeline for automated testing
 
-**Recommended Approach**: Focus on Azure-only MVP (defer GCP and Workspace) to reduce scope and achieve working product faster.
+**Recommended Approach**: Focus on GCP-only MVP (defer GCP and Workspace) to reduce scope and achieve working product faster.
 
 ---
 

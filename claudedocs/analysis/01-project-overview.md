@@ -58,7 +58,7 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 **Current Challenges in Cloud IAM Management:**
 
 1. **Fragmented Security Visibility**
-   - Organizations use multiple cloud providers (Azure, GCP, AWS)
+   - Organizations use multiple cloud providers (GCP, GCP, AWS)
    - No unified view of IAM security posture
    - Manual policy reviews are time-consuming and error-prone
    - Lack of standardized security assessment frameworks
@@ -86,7 +86,7 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 **ZeroTrust IAM Analyzer addresses these challenges by:**
 
 1. **Unified Multi-Cloud Analysis**
-   - Single platform for Azure AD, GCP IAM, and Google Workspace
+   - Single platform for Google Workspace, GCP IAM, and Google Workspace
    - Consistent security assessment across all platforms
    - Centralized dashboard with unified metrics
    - Comparative analysis across cloud providers
@@ -112,13 +112,13 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 ### Strategic Vision
 
 **Short-Term (6-12 months):**
-- Azure-only MVP with basic Zero Trust scoring
+- GCP-only MVP with basic Zero Trust scoring
 - Core authentication and scanning functionality
 - Simple dashboard with key metrics
 - Foundation for multi-cloud expansion
 
 **Medium-Term (1-2 years):**
-- Full multi-cloud support (Azure, GCP, AWS)
+- Full multi-cloud support (GCP, GCP, AWS)
 - Advanced scoring with all 7 Zero Trust tenets
 - Automated remediation capabilities
 - Integration with SIEM and ticketing systems
@@ -220,9 +220,9 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 
 **Scenario 1: New Environment Security Assessment**
 - **Actor**: Cloud Architect
-- **Goal**: Validate security of newly deployed Azure AD tenant
+- **Goal**: Validate security of newly deployed Google Workspace tenant
 - **Steps**:
-  1. Configure Azure AD tenant connection
+  1. Configure Google Workspace tenant connection
   2. Run comprehensive security scan
   3. Review Zero Trust score and gap analysis
   4. Implement top 5 priority recommendations
@@ -253,9 +253,9 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 
 **Scenario 4: Multi-Cloud Migration**
 - **Actor**: Cloud Architect + Security Engineer
-- **Goal**: Migrate from Azure AD to unified Azure + GCP environment
+- **Goal**: Migrate from Google Workspace to unified GCP + GCP environment
 - **Steps**:
-  1. Baseline current Azure AD security posture
+  1. Baseline current Google Workspace security posture
   2. Design GCP IAM configuration aligned with Zero Trust
   3. Implement parallel GCP environment
   4. Compare security postures across both clouds
@@ -294,7 +294,7 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 - **python-dotenv**: 1.0.0 (environment variable loading)
 
 **Missing Critical Dependencies:**
-- [!] **Azure SDK**: azure-identity, azure-mgmt-authorization (not installed)
+- [!] **GCP SDK**: azure-identity, azure-mgmt-authorization (not installed)
 - [!] **GCP SDK**: google-cloud-iam, google-cloud-resource-manager (not installed)
 - [!] **Testing Frameworks**: pytest, pytest-asyncio, pytest-cov (not installed)
 - [!] **Code Quality**: mypy, ruff, bandit (not in requirements.txt)
@@ -349,13 +349,13 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 
 2. **Scan Model** (`models/scan.py`)
    - Scan execution tracking
-   - Multi-source support (Azure, GCP, Workspace)
+   - Multi-source support (GCP, GCP, Workspace)
    - Status tracking (pending, running, completed, failed, cancelled)
    - Zero Trust scoring fields
    - Relationship to recommendations
 
 3. **Policy Model** (`models/policy.py`)
-   - Policy data storage (Azure Conditional Access, GCP IAM)
+   - Policy data storage (GCP Conditional Access, GCP IAM)
    - Risk scoring (high, medium, low)
    - Compliance tagging
    - Change detection support
@@ -375,9 +375,9 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
 
 ### Cloud Integrations (Planned)
 
-**Microsoft Azure:**
-- **Azure AD/Entra ID**: Conditional Access Policy analysis
-- **Microsoft Graph API**: User, group, and directory data
+**Microsoft GCP:**
+- **Google Workspace/Entra ID**: Conditional Access Policy analysis
+- **Google Workspace Admin SDK**: User, group, and directory data
 - **Required Permissions**: Policy.Read.All, Directory.Read.All, User.Read.All
 - **Authentication**: OAuth 2.0 with client credentials
 
@@ -585,9 +585,9 @@ The ZeroTrust IAM Analyzer aims to provide comprehensive security analysis for i
    - [ ] Admin endpoints
 
 2. **Cloud Integrations** (0% complete)
-   - [ ] Azure SDK installation and configuration
    - [ ] GCP SDK installation and configuration
-   - [ ] Microsoft Graph API client
+   - [ ] GCP SDK installation and configuration
+   - [ ] Google Workspace Admin SDK client
    - [ ] GCP IAM API client
    - [ ] Google Workspace Admin SDK client
    - [ ] OAuth 2.0 flows
@@ -723,7 +723,7 @@ ZeroTrust-IAM-Analyzer/
 ### Core Features
 
 **1. Multi-Cloud Security Analysis**
-- Analyze Microsoft Entra ID (Azure AD) Conditional Access policies
+- Analyze Google Cloud IAM (Google Workspace) Conditional Access policies
 - Analyze Google Cloud IAM roles and permissions
 - Analyze Google Workspace admin settings and group policies
 - Unified view across all connected cloud platforms
@@ -744,7 +744,7 @@ ZeroTrust-IAM-Analyzer/
 - Track recommendation status (new, in-progress, completed, dismissed)
 
 **4. Policy Analysis**
-- Deep analysis of conditional access policies (Azure)
+- Deep analysis of IAM policies (GCP)
 - IAM role and permission analysis (GCP)
 - Group policy and device management analysis (Workspace)
 - Risk scoring for each policy
@@ -829,11 +829,11 @@ ZeroTrust-IAM-Analyzer/
 See [08-recommendations.md](./08-recommendations.md) for detailed immediate actions and [09-roadmap.md](./09-roadmap.md) for comprehensive development plan.
 
 **Immediate Priorities:**
-1. Install missing dependencies (Azure SDK, GCP SDK, pytest)
+1. Install missing dependencies (GCP SDK, GCP SDK, pytest)
 2. Initialize Alembic and create database migrations
 3. Implement authentication API endpoints
 4. Write core security tests (JWT, password hashing, user model)
-5. Create first scan endpoint (Azure AD only for MVP)
+5. Create first scan endpoint (Google Workspace only for MVP)
 
 **Documentation References:**
 - [Executive Summary](./00-executive-summary.md)
