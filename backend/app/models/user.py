@@ -8,7 +8,7 @@ role-based access control fields, and account status management.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Boolean, DateTime
 from sqlalchemy import Enum as SQLEnum
@@ -18,6 +18,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .role import Role
+    from .session import Session
 
 
 class UserRole(str, Enum):
@@ -221,6 +225,16 @@ class User(Base):
     # Relationships
     scans: Mapped[List["Scan"]] = relationship(
         "Scan", back_populates="created_by_user", cascade="all, delete-orphan", lazy="dynamic"
+    )
+
+    # Many-to-many relationship with roles for flexible RBAC
+    roles: Mapped[List["Role"]] = relationship(
+        secondary="user_roles", back_populates="users", lazy="dynamic"
+    )
+
+    # One-to-many relationship with sessions for multi-session support
+    sessions: Mapped[List["Session"]] = relationship(
+        "Session", back_populates="user", cascade="all, delete-orphan", lazy="dynamic"
     )
 
     @property

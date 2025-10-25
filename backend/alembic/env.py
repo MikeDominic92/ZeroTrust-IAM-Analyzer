@@ -28,6 +28,9 @@ from app.models.user import User
 from app.models.scan import Scan
 from app.models.policy import Policy
 from app.models.recommendation import Recommendation
+from app.models.role import Role
+from app.models.session import Session
+from app.models.user_roles import user_roles
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

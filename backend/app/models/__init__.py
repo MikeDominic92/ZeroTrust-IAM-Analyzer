@@ -20,8 +20,11 @@ from app.models.recommendation import (
     RecommendationType,
     Severity,
 )
+from app.models.role import Role
 from app.models.scan import Scan, ScanPriority, ScanStatus, ScanType
+from app.models.session import Session
 from app.models.user import AuthenticationProvider, User, UserRole, UserStatus
+from app.models.user_roles import user_roles
 
 __all__ = [
     # Base model
@@ -31,6 +34,9 @@ __all__ = [
     "UserRole",
     "UserStatus",
     "AuthenticationProvider",
+    "Role",
+    "Session",
+    "user_roles",
     # Scan models
     "Scan",
     "ScanStatus",
