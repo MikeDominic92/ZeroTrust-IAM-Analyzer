@@ -2,8 +2,8 @@ import os
 import sys
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # Add the parent directory to the path so we can import our app
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -16,18 +16,16 @@ if os.path.exists(env_path):
     load_dotenv(env_path)
 else:
     # Try parent directory
-    parent_env = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env"
-    )
+    parent_env = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
     if os.path.exists(parent_env):
         load_dotenv(parent_env)
 
 # Import all models to ensure they're registered with Base
 from app.models.base import Base
-from app.models.user import User
-from app.models.scan import Scan
 from app.models.policy import Policy
 from app.models.recommendation import Recommendation
+from app.models.scan import Scan
+from app.models.user import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
