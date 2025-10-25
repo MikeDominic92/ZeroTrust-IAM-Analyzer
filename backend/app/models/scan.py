@@ -205,7 +205,7 @@ class Scan(Base):
         JSON, nullable=True, comment="Tags for categorizing and filtering scans"
     )
 
-    metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+    scan_metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column(
         JSON, nullable=True, comment="Additional metadata in JSON format"
     )
 

@@ -10,7 +10,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import JSON, Boolean
+from sqlalchemy import JSON, Boolean, DateTime
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -222,7 +222,7 @@ class Recommendation(Base):
     )
 
     # Additional metadata
-    metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+    recommendation_metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column(
         JSON, nullable=True, comment="Additional metadata in JSON format"
     )
 
