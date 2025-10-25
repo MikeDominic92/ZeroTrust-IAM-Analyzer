@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 
 from .core.config import get_settings
 from .core.database import check_database_connection, get_database_info
-from .core.logging import configure_logging, get_logger, RequestLoggingMiddleware
+from .core.logging import RequestLoggingMiddleware, configure_logging, get_logger
 from .core.security import get_token_manager
 
 # Configure logging
@@ -30,16 +30,16 @@ async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     # Startup
     logger.info("application_startup", app_name=settings.app_name, version=settings.app_version)
-    
+
     # Check database connection
     db_healthy = check_database_connection()
     if not db_healthy:
         logger.error("database_connection_failed_on_startup")
-    
+
     logger.info("application_startup_completed")
-    
+
     yield
-    
+
     # Shutdown
     logger.info("application_shutdown")
 
@@ -80,7 +80,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         method=request.method,
         exc_info=True,
     )
-    
+
     return JSONResponse(
         status_code=500,
         content={
@@ -99,7 +99,7 @@ async def not_found_handler(request: Request, exc):
         path=request.url.path,
         method=request.method,
     )
-    
+
     return JSONResponse(
         status_code=404,
         content={
@@ -114,7 +114,7 @@ async def not_found_handler(request: Request, exc):
 async def health_check() -> Dict[str, any]:
     """
     Basic health check endpoint.
-    
+
     Returns:
         Health status information
     """
@@ -130,14 +130,14 @@ async def health_check() -> Dict[str, any]:
 async def readiness_check() -> Dict[str, any]:
     """
     Readiness check endpoint.
-    
+
     Returns:
         Readiness status with database connectivity
     """
     db_healthy = check_database_connection()
-    
+
     status = "ready" if db_healthy else "not_ready"
-    
+
     return {
         "status": status,
         "checks": {
@@ -152,7 +152,7 @@ async def readiness_check() -> Dict[str, any]:
 async def liveness_check() -> Dict[str, any]:
     """
     Liveness check endpoint.
-    
+
     Returns:
         Liveness status
     """
@@ -167,13 +167,13 @@ async def liveness_check() -> Dict[str, any]:
 async def detailed_health_check() -> Dict[str, any]:
     """
     Detailed health check endpoint.
-    
+
     Returns:
         Detailed health status including database info
     """
     db_healthy = check_database_connection()
     db_info = get_database_info() if db_healthy else {"error": "Database not connected"}
-    
+
     return {
         "status": "healthy" if db_healthy else "unhealthy",
         "service": settings.app_name,
@@ -197,7 +197,7 @@ async def detailed_health_check() -> Dict[str, any]:
 async def root() -> Dict[str, any]:
     """
     Root endpoint with application information.
-    
+
     Returns:
         Application information
     """
@@ -215,7 +215,7 @@ async def root() -> Dict[str, any]:
 async def app_info() -> Dict[str, any]:
     """
     Application information endpoint.
-    
+
     Returns:
         Detailed application information
     """
@@ -248,7 +248,7 @@ async def app_info() -> Dict[str, any]:
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     logger.info(
         "starting_server",
         host="0.0.0.0",
@@ -256,7 +256,7 @@ if __name__ == "__main__":
         reload=settings.reload,
         debug=settings.debug,
     )
-    
+
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",

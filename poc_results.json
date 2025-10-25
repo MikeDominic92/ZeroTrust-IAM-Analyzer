@@ -1,0 +1,10 @@
+{
+  "authentication": true,
+  "iam_policies": true,
+  "iam_recommender": true,
+  "asset_inventory": true,
+  "errors": [],
+  "policy_count": 8,
+  "recommendation_count": 3,
+  "service_account_count": 4
+}
