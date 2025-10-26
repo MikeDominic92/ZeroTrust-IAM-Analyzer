@@ -2,8 +2,8 @@
 
 **Last Updated**: 2025-10-25
 **Current Phase**: Phase 1 (Foundation - Authentication and Core Infrastructure)
-**Current Task**: Task 1.6 (Implement token refresh endpoint)
-**Overall Completion**: 13/77 tasks complete (16.9%)
+**Current Task**: Task 1.7 (Implement logout endpoint with session invalidation)
+**Overall Completion**: 14/77 tasks complete (18.2%)
 
 ---
 
@@ -13,7 +13,7 @@
 - [x] Phase 0: Project Setup and Environment Configuration (8/8 tasks - 100%)
 
 **In-Progress Phases:**
-- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (5/13 tasks - 38.5%)
+- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (6/13 tasks - 46.2%)
 
 **Pending Phases:**
 - [ ] Phase 2: MVP - GCP-Only Zero Trust Analysis (0/15 tasks)
@@ -93,8 +93,8 @@
 
 **Status**: IN PROGRESS 🔄
 **Started**: October 25, 2025
-**Current Task**: Task 1.6
-**Completion**: 5/13 tasks (38.5%)
+**Current Task**: Task 1.7
+**Completion**: 6/13 tasks (46.2%)
 
 ### Completed Tasks
 
@@ -185,9 +185,38 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **Testing**: Import successful, server starts successfully on port 8080
 - **Deferred**: Flake8 C901 complexity (necessary security validation), Mypy Any return type, Bandit B105 false positive
 
+#### Task 1.6: Implement Token Refresh Endpoint
+- **Status**: ✅ Complete
+- **Commit**: f7be79c
+- **Date**: October 25, 2025
+- **Details**: Created POST /api/v1/auth/refresh endpoint with token rotation implementation
+- **Files Modified**:
+  - backend/app/api/v1/auth.py (+204 lines)
+- **Functionality**:
+  - POST /api/v1/auth/refresh accepts TokenRefreshRequest
+  - Validates refresh token signature and expiration
+  - Verifies token type is "refresh" (rejects access tokens)
+  - Queries session by refresh_token_jti field
+  - Checks session not revoked and not expired
+  - Queries user by ID and verifies active status
+  - Generates NEW access token with new JTI (30-minute expiry)
+  - Generates NEW refresh token with new JTI (7-day expiry)
+  - Updates session record with new token_jti, refresh_token_jti, expires_at
+  - Invalidates old tokens through session update
+  - Returns TokenResponse with both new tokens
+- **Token Rotation Security**:
+  - Single-use tokens: Each refresh generates new tokens, old ones invalidated
+  - Prevents token replay attacks
+  - Enables detection of token theft
+  - Aligns with OAuth 2.0 security best practices
+- **Refresh Flow**: Validate refresh token → Query session → Verify active → Generate new tokens → Update session → Return
+- **Error Handling**: 401 for invalid/expired/wrong-type tokens, revoked/expired sessions, inactive users
+- **Testing**: Server startup successful on port 8080, endpoint registered at /api/v1/auth/refresh
+- **Deferred**: Unit tests and integration tests deferred to Task 1.12
+
 ### Pending Tasks
 
-- [ ] Task 1.6: Implement token refresh endpoint
+- [ ] Task 1.7: Implement logout endpoint with session invalidation
 - [ ] Task 1.6: Implement token refresh endpoint
 - [ ] Task 1.7: Implement logout endpoint with session invalidation
 - [ ] Task 1.8: Implement password reset request endpoint
@@ -203,14 +232,14 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ### Commits by Phase
 - **Phase 0**: 3 commits (07d6f7a, 1edd79b, ba18ec0)
-- **Phase 1**: 5 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687)
+- **Phase 1**: 6 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c)
 
 ### Code Statistics (Phase 0 + Phase 1 In-Progress)
 - **Python Files Created**: 13 (3 in Phase 0 migration, 10 in Phase 1)
 - **Configuration Files Created**: 3 (.pre-commit-config.yaml, pyproject.toml, .flake8)
 - **Database Migrations**: 2 (initial schema, auth models)
 - **Docker Containers**: 2 (PostgreSQL, Redis)
-- **API Endpoints**: 2 (POST /api/v1/auth/register, POST /api/v1/auth/login)
+- **API Endpoints**: 3 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh)
 - **Dependency Functions**: 1 (get_current_user for protected endpoints)
 
 ### Test Coverage
@@ -227,8 +256,8 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **PR #3**: Phase 0 setup (feature/phase-0-setup branch) - Merged October 24, 2025
 
 ### Current Branch
-- **feature/phase-1-foundation**: Task 1.5 committed (2a54687)
-- **Next Commit**: Task 1.6 implementation (Token refresh endpoint)
+- **feature/phase-1-foundation**: Task 1.6 committed (f7be79c)
+- **Next Commit**: Task 1.7 implementation (Logout endpoint with session invalidation)
 
 
 ---
@@ -255,16 +284,15 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Next Steps
 
 **Immediate (Next session)**:
-1. Begin Task 1.6: Token refresh endpoint
-   - Implement POST /api/v1/auth/refresh endpoint
-   - Accept refresh token in request body
-   - Validate refresh token and verify session
-   - Generate new access token (and optionally new refresh token)
-   - Update session record with new token JTI
-   - Return new token pair to client
+1. Begin Task 1.7: Logout endpoint with session invalidation
+   - Implement POST /api/v1/auth/logout endpoint
+   - Require authentication (use get_current_user dependency)
+   - Mark session as revoked in database
+   - Set revoked_at timestamp on session
+   - Return success message
+   - Verify subsequent requests with same token fail
 
 **Short-term (Next few tasks)**:
-- Task 1.7: Logout endpoint with session invalidation
 - Task 1.8-1.9: Password reset flow
 - Task 1.10: RBAC enforcement middleware
 - Task 1.11: Session management with Redis caching
@@ -272,7 +300,7 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - Task 1.13: Generate OpenAPI documentation
 
 **Long-term**:
-- Complete Phase 1 (8 tasks remaining)
+- Complete Phase 1 (7 tasks remaining)
 - Begin Phase 2 (GCP integration and Zero Trust analysis)
 
 ---
@@ -286,4 +314,4 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ---
 
-**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.5 complete, Task 1.6 ready to start
+**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.6 complete, Task 1.7 ready to start
