@@ -6,7 +6,7 @@ CORS middleware setup, API router inclusion, and health check endpoints.
 """
 
 from contextlib import asynccontextmanager
-from typing import Dict
+from typing import Any, Dict
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -111,7 +111,7 @@ async def not_found_handler(request: Request, exc):
 
 # Health check endpoints
 @app.get("/health", tags=["Health"])
-async def health_check() -> Dict[str, any]:
+async def health_check() -> Dict[str, Any]:
     """
     Basic health check endpoint.
 
@@ -127,7 +127,7 @@ async def health_check() -> Dict[str, any]:
 
 
 @app.get("/health/ready", tags=["Health"])
-async def readiness_check() -> Dict[str, any]:
+async def readiness_check() -> Dict[str, Any]:
     """
     Readiness check endpoint.
 
@@ -149,7 +149,7 @@ async def readiness_check() -> Dict[str, any]:
 
 
 @app.get("/health/live", tags=["Health"])
-async def liveness_check() -> Dict[str, any]:
+async def liveness_check() -> Dict[str, Any]:
     """
     Liveness check endpoint.
 
@@ -240,10 +240,10 @@ async def app_info() -> Dict[str, any]:
     }
 
 
-# Placeholder for API router inclusion
-# This will be expanded as we add more endpoints
-# from app.api.v1.api import api_router
-# app.include_router(api_router, prefix=settings.api_prefix)
+# Include API v1 router
+from app.api.v1.api import api_router
+
+app.include_router(api_router, prefix=settings.api_prefix)
 
 
 if __name__ == "__main__":

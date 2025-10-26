@@ -290,3 +290,4 @@ scans/
 reports/
 exports/
 uploads/
+backend/.env

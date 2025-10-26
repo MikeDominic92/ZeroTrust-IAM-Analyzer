@@ -224,17 +224,17 @@ class User(Base):
 
     # Relationships
     scans: Mapped[List["Scan"]] = relationship(
-        "Scan", back_populates="created_by_user", cascade="all, delete-orphan", lazy="dynamic"
+        "Scan", back_populates="created_by_user", cascade="all, delete-orphan", lazy="selectin"
     )
 
     # Many-to-many relationship with roles for flexible RBAC
     roles: Mapped[List["Role"]] = relationship(
-        secondary="user_roles", back_populates="users", lazy="dynamic"
+        secondary="user_roles", back_populates="users", lazy="selectin"
     )
 
     # One-to-many relationship with sessions for multi-session support
     sessions: Mapped[List["Session"]] = relationship(
-        "Session", back_populates="user", cascade="all, delete-orphan", lazy="dynamic"
+        "Session", back_populates="user", cascade="all, delete-orphan", lazy="selectin"
     )
 
     @property

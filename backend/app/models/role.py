@@ -70,7 +70,7 @@ class Role(Base):
 
     # Relationships
     users: Mapped[List["User"]] = relationship(
-        secondary="user_roles", back_populates="roles", lazy="dynamic"
+        secondary="user_roles", back_populates="roles", lazy="selectin"
     )
 
     def __repr__(self) -> str:
