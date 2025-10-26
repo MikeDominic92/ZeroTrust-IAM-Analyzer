@@ -2,8 +2,8 @@
 
 **Last Updated**: 2025-10-25
 **Current Phase**: Phase 1 (Foundation - Authentication and Core Infrastructure)
-**Current Task**: Task 1.9 (Implement password reset confirmation endpoint)
-**Overall Completion**: 16/77 tasks complete (20.8%)
+**Current Task**: Task 1.10 (Implement RBAC enforcement middleware and decorators)
+**Overall Completion**: 17/77 tasks complete (22.1%)
 
 ---
 
@@ -13,7 +13,7 @@
 - [x] Phase 0: Project Setup and Environment Configuration (8/8 tasks - 100%)
 
 **In-Progress Phases:**
-- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (8/13 tasks - 61.5%)
+- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (9/13 tasks - 69.2%)
 
 **Pending Phases:**
 - [ ] Phase 2: MVP - GCP-Only Zero Trust Analysis (0/15 tasks)
@@ -93,8 +93,8 @@
 
 **Status**: IN PROGRESS 🔄
 **Started**: October 25, 2025
-**Current Task**: Task 1.9
-**Completion**: 8/13 tasks (61.5%)
+**Current Task**: Task 1.10
+**Completion**: 9/13 tasks (69.2%)
 
 ### Completed Tasks
 
@@ -272,9 +272,50 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **Testing**: Server startup successful on port 8080, endpoint registered at /api/v1/auth/password-reset/request
 - **Deferred**: Email sending functionality (will be added in production), unit tests deferred to Task 1.12
 
+#### Task 1.9: Implement Password Reset Confirmation Endpoint
+- **Status**: ✅ Complete
+- **Commit**: 92e3259
+- **Date**: October 25, 2025
+- **Details**: Created POST /api/v1/auth/password-reset/confirm endpoint with token validation and password update
+- **Files Modified**:
+  - backend/app/services/auth_service.py (+64 lines - added confirm_password_reset method)
+  - backend/app/api/v1/auth.py (+53 lines - added password reset confirmation endpoint)
+- **Functionality**:
+  - POST /api/v1/auth/password-reset/confirm accepts PasswordResetConfirm (token, new_password)
+  - AuthService.confirm_password_reset() validates reset token and updates password
+  - Queries user by password_reset_token field
+  - Validates token exists in database (raises 400 if not found)
+  - Validates token not expired (checks password_reset_expires > now, raises 400 if expired)
+  - Hashes new password with bcrypt (get_password_hash, 12 rounds)
+  - Updates user.password_hash with new hash
+  - Clears reset token fields (password_reset_token = None, password_reset_expires = None)
+  - Updates last_password_change timestamp to datetime.utcnow()
+  - Commits changes to database
+  - Logs successful password reset (logger.info with user_id, email)
+  - Returns success message: "Password has been reset successfully"
+- **Password Reset Confirmation Flow**: Receive token+password → Query user by token → Validate not expired → Hash password → Update password → Clear token → Update timestamp → Commit → Log → Return success
+- **Security Features**:
+  - Token validation (must exist in database)
+  - Expiration checking (password_reset_expires > now)
+  - Single-use tokens (cleared after successful reset)
+  - Bcrypt password hashing (12 rounds, secure)
+  - Password strength validation (via PasswordResetConfirm Pydantic validator)
+  - last_password_change tracking for audit trail
+- **Password Strength Requirements** (enforced by schema):
+  - Minimum 8 characters
+  - At least one uppercase letter
+  - At least one lowercase letter
+  - At least one digit
+- **Error Handling**:
+  - 400 Bad Request for invalid/expired tokens
+  - 400 Bad Request for weak passwords (via Pydantic validation)
+  - 500 Internal Server Error for database errors
+  - Generic error messages prevent information leakage
+- **Testing**: Server startup successful on port 8080, endpoint registered at /api/v1/auth/password-reset/confirm
+- **Deferred**: Unit tests and integration tests deferred to Task 1.12
+
 ### Pending Tasks
 
-- [ ] Task 1.9: Implement password reset confirmation endpoint
 - [ ] Task 1.10: Implement RBAC enforcement middleware and decorators
 - [ ] Task 1.11: Implement session management with Redis caching
 - [ ] Task 1.12: Write comprehensive security tests
@@ -286,14 +327,14 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ### Commits by Phase
 - **Phase 0**: 3 commits (07d6f7a, 1edd79b, ba18ec0)
-- **Phase 1**: 8 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d, fe561d4)
+- **Phase 1**: 9 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d, fe561d4, 92e3259)
 
 ### Code Statistics (Phase 0 + Phase 1 In-Progress)
 - **Python Files Created**: 13 (3 in Phase 0 migration, 10 in Phase 1)
 - **Configuration Files Created**: 3 (.pre-commit-config.yaml, pyproject.toml, .flake8)
 - **Database Migrations**: 3 (initial schema, auth models, password reset fields)
 - **Docker Containers**: 2 (PostgreSQL, Redis)
-- **API Endpoints**: 5 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout, POST /api/v1/auth/password-reset/request)
+- **API Endpoints**: 6 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout, POST /api/v1/auth/password-reset/request, POST /api/v1/auth/password-reset/confirm)
 - **Dependency Functions**: 2 (get_current_user for protected endpoints, get_current_session for session management)
 
 ### Test Coverage
@@ -310,8 +351,8 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **PR #3**: Phase 0 setup (feature/phase-0-setup branch) - Merged October 24, 2025
 
 ### Current Branch
-- **feature/phase-1-foundation**: Task 1.8 committed (fe561d4)
-- **Next Commit**: Task 1.9 implementation (Password reset confirmation endpoint)
+- **feature/phase-1-foundation**: Task 1.9 committed (92e3259)
+- **Next Commit**: Task 1.10 implementation (RBAC enforcement middleware and decorators)
 
 
 ---
@@ -325,7 +366,7 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ### Database Schema
 - **Current Migration**: fbe8b411d4e5
 - **Tables**: user (with password reset fields), role, session, user_roles, scan, policy, recommendation, alembic_version
-- **Next Migration**: None required for Task 1.9 (uses existing schema)
+- **Next Migration**: None required for Task 1.10 (uses existing schema)
 
 ### Development Environment
 - **Python**: 3.13
@@ -338,23 +379,22 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Next Steps
 
 **Immediate (Next session)**:
-1. Begin Task 1.9: Password reset confirmation endpoint
-   - Implement POST /api/v1/auth/password-reset/confirm endpoint
-   - Accept reset token and new password
-   - Validate token exists and not expired
-   - Update user password hash
-   - Clear reset token and expiration
-   - Return success message
+1. Begin Task 1.10: RBAC enforcement middleware and decorators
+   - Create RBAC decorator factory for role-based access control
+   - Implement permission checking logic
+   - Create require_role decorator for endpoint protection
+   - Create require_permission decorator for granular access control
+   - Integrate with existing get_current_user dependency
+   - Test with protected endpoints
 
 **Short-term (Next few tasks)**:
-- Task 1.9: Complete password reset flow
 - Task 1.10: RBAC enforcement middleware
 - Task 1.11: Session management with Redis caching
 - Task 1.12: Write comprehensive security tests
 - Task 1.13: Generate OpenAPI documentation
 
 **Long-term**:
-- Complete Phase 1 (7 tasks remaining)
+- Complete Phase 1 (4 tasks remaining)
 - Begin Phase 2 (GCP integration and Zero Trust analysis)
 
 ---
@@ -362,10 +402,10 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Notes
 
 - **Tracking Restored**: PROGRESS.md created October 25, 2025 to restore checkpoint system
-- **TODO.md Status**: Updated to reflect Task 1.2 completion
+- **TODO.md Status**: Updated to reflect Task 1.9 completion
 - **GitHub Workflow**: Following RULES_GITHUB_PROJECTS.md (commit after every task, tracking updates)
 - **Development Mode**: Standard Claude Code with ultrathink (CodingGod mode available for future tasks)
 
 ---
 
-**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.8 complete, Task 1.9 ready to start
+**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.9 complete, Task 1.10 ready to start
