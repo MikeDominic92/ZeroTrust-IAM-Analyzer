@@ -22,7 +22,12 @@ settings = get_settings()
 logger = get_logger(__name__)
 
 # Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Configure bcrypt rounds in CryptContext (modern API)
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__rounds=12,
+)
 
 # HTTP Bearer token scheme
 security = HTTPBearer()
@@ -85,7 +90,7 @@ def get_password_hash(password: str) -> str:
     Returns:
         Hashed password
     """
-    hashed_password = pwd_context.hash(password, rounds=settings.bcrypt_rounds)
+    hashed_password = pwd_context.hash(password)
     logger.debug("password_hashed")
     return hashed_password
 
@@ -210,7 +215,7 @@ def verify_refresh_token(token: str) -> Optional[str]:
         subject: str = payload.get("sub")
         token_type: str = payload.get("type")
 
-        if subject is None or token_type != "refresh":
+        if subject is None or token_type != "refresh":  # nosec B105
             logger.warning("invalid_refresh_token", token=token[:10] + "...")
             return None
 
@@ -307,7 +312,7 @@ def hash_api_key(api_key: str) -> str:
     Returns:
         Hashed API key
     """
-    hashed_key = pwd_context.hash(api_key, rounds=settings.bcrypt_rounds)
+    hashed_key = pwd_context.hash(api_key)
     logger.debug("api_key_hashed")
     return hashed_key
 

@@ -8,7 +8,7 @@ including policy metadata, classification, risk scoring, and relationships.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from sqlalchemy import JSON, Boolean, DateTime
 from sqlalchemy import Enum as SQLEnum
@@ -17,6 +17,10 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .recommendation import Recommendation
+    from .scan import Scan
 
 
 class PolicySource(str, Enum):
@@ -232,6 +236,7 @@ class Policy(Base):
 
     parent_policy_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True),
+        ForeignKey("policy.id"),
         nullable=True,
         index=True,
         comment="ID of parent policy if this is derived",
@@ -295,12 +300,14 @@ class Policy(Base):
     scan: Mapped["Scan"] = relationship("Scan", back_populates="policies")
 
     recommendations: Mapped[list["Recommendation"]] = relationship(
-        "Recommendation", back_populates="policy", cascade="all, delete-orphan", lazy="dynamic"
+        "Recommendation",
+        back_populates="policy",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
     )
 
-    child_policies: Mapped[list["Policy"]] = relationship(
-        "Policy", backref="parent_policy", remote_side=[id], cascade="all, delete-orphan"
-    )
+    # NOTE: Self-referential relationship defined at module level after
+    # class definition to avoid scoping issues
 
     @property
     def is_high_risk(self) -> bool:
@@ -388,4 +395,25 @@ class Policy(Base):
 
     def __repr__(self) -> str:
         """String representation of the Policy model."""
-        return f"<Policy(id={self.id}, name={self.name}, source={self.source}, risk_level={self.risk_level})>"
+        return (
+            f"<Policy(id={self.id}, name={self.name}, "
+            f"source={self.source}, risk_level={self.risk_level})>"
+        )
+
+
+# Configure self-referential relationship after class definition
+# This avoids the scoping issue where 'id' was being interpreted as
+# Python's built-in id() function
+Policy.parent_policy = relationship(
+    "Policy",
+    foreign_keys=[Policy.parent_policy_id],
+    remote_side=[Policy.id],
+    back_populates="child_policies",
+)
+
+Policy.child_policies = relationship(
+    "Policy",
+    foreign_keys=[Policy.parent_policy_id],
+    back_populates="parent_policy",
+    cascade="all, delete-orphan",
+)

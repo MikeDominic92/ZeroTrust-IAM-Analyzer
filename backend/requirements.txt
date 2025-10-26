@@ -12,6 +12,7 @@ psycopg[binary]==3.1.18  # psycopg3 for better Python 3.13 support
 # Authentication & Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt>=3.2.0,<4.2.0  # Pin bcrypt for passlib 1.7.4 compatibility
 python-multipart==0.0.6
 
 # Data validation
