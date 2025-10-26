@@ -10,8 +10,10 @@ from datetime import datetime, timedelta
 
 from app.core.config import get_settings
 from app.core.database import get_db
-from app.core.dependencies import get_current_session
+from app.core.dependencies import get_current_session, get_current_user, require_role
 from app.core.logging import get_logger
+from app.models.session import Session as SessionModel
+from app.models.user import User
 from app.schemas.auth import (
     PasswordResetConfirm,
     PasswordResetRequest,
@@ -23,7 +25,6 @@ from app.schemas.auth import (
     UserRegisterRequest,
     UserRegisterResponse,
 )
-from app.models.session import Session as SessionModel
 from app.services.auth_service import get_auth_service
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError, jwt
@@ -376,9 +377,7 @@ async def refresh_token(
 
     # Query session by refresh_token_jti (NOT token_jti which is for access tokens)
     session = (
-        db.query(SessionModel)
-        .filter(SessionModel.refresh_token_jti == refresh_token_jti)
-        .first()
+        db.query(SessionModel).filter(SessionModel.refresh_token_jti == refresh_token_jti).first()
     )
 
     if session is None:
@@ -593,9 +592,7 @@ async def request_password_reset(
     auth_service.request_password_reset(reset_request.email)
 
     # Return generic success message (prevents user enumeration)
-    return {
-        "message": "If an account exists with this email, a password reset link has been sent"
-    }
+    return {"message": "If an account exists with this email, a password reset link has been sent"}
 
 
 @router.post(
@@ -674,3 +671,40 @@ async def confirm_password_reset(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred during password reset: {str(e)}",
         )
+
+
+@router.get(
+    "/test-rbac-admin",
+    status_code=status.HTTP_200_OK,
+    summary="Test RBAC - Admin Only",
+    description="Test endpoint to verify RBAC enforcement. Requires Admin role.",
+    responses={
+        200: {"description": "Access granted (user has Admin role)"},
+        401: {"description": "Unauthorized (not authenticated)"},
+        403: {"description": "Forbidden (user lacks Admin role)"},
+    },
+)
+async def test_rbac_admin(
+    current_user: User = Depends(get_current_user),
+    _: None = Depends(require_role(["Admin"])),
+) -> dict:
+    """
+    Test endpoint requiring Admin role.
+
+    This endpoint demonstrates RBAC enforcement using the require_role() dependency.
+    Only users with the 'Admin' role can access this endpoint. Users with other
+    roles (e.g., 'User', 'Analyst') will receive a 403 Forbidden response.
+
+    Returns:
+        dict: Success message with user information
+
+    Raises:
+        HTTPException 401: If user is not authenticated
+        HTTPException 403: If user does not have Admin role
+    """
+    return {
+        "message": f"Admin access granted for {current_user.username}",
+        "user_id": str(current_user.id),
+        "email": current_user.email,
+        "roles": [role.name for role in current_user.roles if role.is_active],
+    }
