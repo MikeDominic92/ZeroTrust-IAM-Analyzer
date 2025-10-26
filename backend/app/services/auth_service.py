@@ -11,6 +11,7 @@ from typing import Optional
 
 from app.core.security import get_password_hash, verify_password
 from app.models.role import Role
+from app.models.session import Session as SessionModel
 from app.models.user import User, UserStatus
 from app.schemas.auth import UserRegisterRequest
 from fastapi import HTTPException, status
@@ -128,6 +129,117 @@ class AuthService:
             User object or None if not found
         """
         return self.db.query(User).filter(User.id == user_id).first()
+
+    def authenticate_user(
+        self, username_or_email: str, password: str, ip_address: Optional[str] = None
+    ) -> User:
+        """
+        Authenticate user with username/email and password.
+
+        This method handles the complete authentication flow including:
+        - User lookup by email or username
+        - Account lockout checking
+        - Password verification
+        - Failed login attempt tracking
+        - Successful login recording
+
+        Args:
+            username_or_email: Username or email address
+            password: Plain text password
+            ip_address: Optional IP address for login tracking
+
+        Returns:
+            Authenticated user object
+
+        Raises:
+            HTTPException 401: Invalid credentials (user not found or wrong password)
+            HTTPException 403: Account locked due to too many failed attempts
+        """
+        # Try email first, then username
+        user = self.get_user_by_email(username_or_email)
+        if not user:
+            user = self.get_user_by_username(username_or_email)
+
+        # User not found - return generic error (security best practice)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials",
+            )
+
+        # Check if account is locked
+        if user.is_account_locked:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account locked due to too many failed attempts. Please contact support.",
+            )
+
+        # Check if account is inactive
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is inactive. Please contact support.",
+            )
+
+        # Verify password
+        if not verify_password(password, user.password_hash):
+            # Record failed attempt (also handles auto-lock at 5 attempts)
+            user.record_login_attempt(success=False, ip_address=ip_address)
+            self.db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials",
+            )
+
+        # Successful login - record it (updates last_login_at, resets failed attempts)
+        user.record_login_attempt(success=True, ip_address=ip_address)
+        self.db.commit()
+
+        return user
+
+    def create_session(
+        self,
+        user: User,
+        access_token_jti: str,
+        refresh_token_jti: str,
+        expires_at: datetime,
+        ip_address: Optional[str] = None,
+        user_agent: Optional[str] = None,
+    ) -> SessionModel:
+        """
+        Create new session for user.
+
+        Sessions track JWT token pairs and allow for individual session revocation.
+        Each login creates a new session record for audit and revocation purposes.
+
+        Args:
+            user: User object
+            access_token_jti: Access token JTI (JWT ID claim)
+            refresh_token_jti: Refresh token JTI
+            expires_at: Session expiration timestamp (matches access token expiry)
+            ip_address: Optional IP address where session was created
+            user_agent: Optional user agent string for device identification
+
+        Returns:
+            Created session object
+        """
+        new_session = SessionModel(
+            id=uuid.uuid4(),
+            user_id=user.id,
+            token_jti=access_token_jti,
+            refresh_token_jti=refresh_token_jti,
+            expires_at=expires_at,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            last_activity_at=datetime.utcnow(),
+            created_at=datetime.utcnow(),
+        )
+
+        self.db.add(new_session)
+        self.db.commit()
+        self.db.refresh(new_session)
+
+        return new_session
 
 
 def get_auth_service(db: Session) -> AuthService:
