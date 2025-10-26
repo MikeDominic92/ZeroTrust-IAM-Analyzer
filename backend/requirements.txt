@@ -26,6 +26,10 @@ structlog==23.2.0
 
 # Utilities
 python-dotenv==1.0.0
+
+# Caching
+redis>=5.0.0,<6.0.0
+
 # Google Cloud Platform SDKs
 google-cloud-iam>=2.19.1
 google-cloud-asset>=3.26.0

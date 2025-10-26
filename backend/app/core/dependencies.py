@@ -115,6 +115,92 @@ def get_current_user(
 
         # Extract token JTI for session verification
         token_jti: Optional[str] = payload.get("jti")
+
+        # TRY REDIS CACHE FIRST (Task 1.11 enhancement)
+        cached_session_data = get_cached_session(token_jti)
+        if cached_session_data:
+            # Cache hit - validate cached data
+            logger.debug(
+                "using_cached_session",
+                token_jti=token_jti,
+                user_id=cached_session_data.get("user_id"),
+            )
+
+            # Validate cached session is not revoked
+            if cached_session_data.get("is_revoked"):
+                logger.warning(
+                    "cached_session_revoked",
+                    token_jti=token_jti,
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Session has been revoked",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            # Validate cached session has not expired
+            try:
+                expires_at_str = cached_session_data.get("expires_at")
+                if expires_at_str:
+                    from datetime import datetime
+
+                    expires_at = datetime.fromisoformat(expires_at_str)
+                    if expires_at < datetime.utcnow():
+                        logger.warning(
+                            "cached_session_expired",
+                            token_jti=token_jti,
+                            expires_at=expires_at,
+                        )
+                        raise HTTPException(
+                            status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Session has expired",
+                            headers={"WWW-Authenticate": "Bearer"},
+                        )
+            except (ValueError, TypeError) as e:
+                logger.warning(
+                    "cached_session_invalid_expiry",
+                    token_jti=token_jti,
+                    error=str(e),
+                )
+                # Fall through to database query
+
+            # Get user ID from cache
+            user_id_str = cached_session_data.get("user_id")
+            if user_id_str:
+                try:
+                    user_id = uuid.UUID(user_id_str)
+                    # Query user from database (still need fresh user data)
+                    user = (
+                        db.query(User)
+                        .options(joinedload(User.roles))
+                        .filter(User.id == user_id)
+                        .first()
+                    )
+
+                    if user and user.is_active:
+                        logger.debug(
+                            "cache_hit_user_authenticated",
+                            user_id=str(user.id),
+                            username=user.username,
+                        )
+                        return user
+                    else:
+                        # User no longer active - invalidate cache and fall through
+                        logger.warning(
+                            "cached_user_inactive",
+                            user_id=user_id_str,
+                        )
+                except (ValueError, AttributeError):
+                    # Invalid UUID or user data - fall through to DB query
+                    pass
+
+            # Cache data incomplete or invalid - fall through to database query
+            logger.debug(
+                "cache_data_incomplete",
+                token_jti=token_jti,
+                message="Falling back to database query",
+            )
+
         if token_jti is None:
             logger.warning("token_missing_jti")
             raise credentials_exception

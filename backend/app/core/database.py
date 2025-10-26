@@ -2,7 +2,7 @@
 Database configuration and connection management for ZeroTrust IAM Analyzer.
 
 This module handles SQLAlchemy engine setup, session management,
-and database dependencies for FastAPI.
+Redis cache initialization, and database dependencies for FastAPI.
 """
 
 from typing import Generator
@@ -94,6 +94,61 @@ def check_database_connection() -> bool:
         logger.error("database_connection_failed", error=str(e), exc_info=True)
         return False
 
+def init_connections() -> dict:
+    """
+    Initialize all database and cache connections.
+
+    Initializes PostgreSQL database and Redis cache connections.
+    This should be called during application startup.
+
+    Returns:
+        Dictionary with initialization status for each service
+
+    Example:
+        ```python
+        from app.core.database import init_connections
+
+        # In FastAPI startup event
+        @app.on_event("startup")
+        async def startup():
+            status = init_connections()
+            logger.info("connections_initialized", **status)
+        ```
+    """
+    from .redis import init_redis, ping_redis
+
+    status = {
+        "database": "unknown",
+        "redis": "unknown",
+    }
+
+    # Initialize database connection
+    try:
+        db_healthy = check_database_connection()
+        status["database"] = "connected" if db_healthy else "failed"
+    except Exception as e:
+        logger.error("database_init_failed", error=str(e), exc_info=True)
+        status["database"] = "error"
+
+    # Initialize Redis connection
+    try:
+        redis_client = init_redis()
+        if redis_client and ping_redis():
+            status["redis"] = "connected"
+        else:
+            status["redis"] = "unavailable"
+            logger.warning(
+                "redis_unavailable_on_startup",
+                message="Redis is unavailable - will use database-only mode",
+            )
+    except Exception as e:
+        logger.error("redis_init_failed", error=str(e), exc_info=True)
+        status["redis"] = "error"
+
+    logger.info("connections_initialized", **status)
+    return status
+
+
 
 class DatabaseManager:
     """Database connection manager."""
@@ -114,38 +169,97 @@ class DatabaseManager:
 
     def health_check(self) -> dict:
         """
-        Perform database health check.
+        Perform comprehensive health check on database and cache.
 
         Returns:
-            Health check result
+            Health check result including database and Redis status
         """
+        from .redis import ping_redis, get_redis_info
+
+        result = {
+            "status": "unknown",
+            "database": {},
+            "redis": {},
+        }
+
+        # Check database health
         try:
             with self.engine.connect() as connection:
-                result = connection.execute("SELECT 1")
-                row = result.fetchone()
+                db_result = connection.execute("SELECT 1")
+                row = db_result.fetchone()
 
-            return {
+            result["database"] = {
                 "status": "healthy",
-                "database": "connected",
+                "connected": True,
                 "test_query": "SELECT 1",
                 "result": row[0] if row else None,
             }
+            db_healthy = True
+
         except Exception as e:
             logger.error("database_health_check_failed", error=str(e), exc_info=True)
-            return {
+            result["database"] = {
                 "status": "unhealthy",
-                "database": "disconnected",
+                "connected": False,
                 "error": str(e),
             }
+            db_healthy = False
+
+        # Check Redis health
+        try:
+            redis_available = ping_redis()
+            if redis_available:
+                redis_info = get_redis_info()
+                result["redis"] = {
+                    "status": "healthy",
+                    "connected": True,
+                    "version": redis_info.get("redis_version", "unknown"),
+                    "memory": redis_info.get("used_memory_human", "unknown"),
+                }
+                redis_healthy = True
+            else:
+                result["redis"] = {
+                    "status": "unavailable",
+                    "connected": False,
+                    "message": "Redis not responding to ping",
+                }
+                redis_healthy = False
+
+        except Exception as e:
+            logger.error("redis_health_check_failed", error=str(e), exc_info=True)
+            result["redis"] = {
+                "status": "error",
+                "connected": False,
+                "error": str(e),
+            }
+            redis_healthy = False
+
+        # Overall status
+        if db_healthy and redis_healthy:
+            result["status"] = "healthy"
+        elif db_healthy:
+            result["status"] = "degraded"  # DB healthy, Redis down
+        else:
+            result["status"] = "unhealthy"  # DB down (critical)
+
+        return result
 
     def close_connections(self) -> None:
-        """Close all database connections."""
+        """Close all database and cache connections."""
+        from .redis import close_redis
+
+        # Close database connections
         try:
             self.engine.dispose()
             logger.info("database_connections_closed")
         except Exception as e:
             logger.error("database_connections_close_failed", error=str(e), exc_info=True)
-            raise
+
+        # Close Redis connections
+        try:
+            close_redis()
+        except Exception as e:
+            logger.error("redis_connections_close_failed", error=str(e), exc_info=True)
 
 
 # Create global database manager instance

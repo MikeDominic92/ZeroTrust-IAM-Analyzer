@@ -16,6 +16,7 @@ from app.models.role import Role
 from app.models.session import Session as SessionModel
 from app.models.user import User, UserStatus
 from app.schemas.auth import UserRegisterRequest
+from app.services.cache_service import cache_session
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -242,6 +243,9 @@ class AuthService:
         self.db.add(new_session)
         self.db.commit()
         self.db.refresh(new_session)
+
+        # Cache session for fast authentication lookups (Task 1.11)
+        cache_session(new_session, user)
 
         return new_session
 

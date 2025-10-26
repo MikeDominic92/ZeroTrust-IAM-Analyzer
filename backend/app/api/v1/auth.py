@@ -26,6 +26,7 @@ from app.schemas.auth import (
     UserRegisterResponse,
 )
 from app.services.auth_service import get_auth_service
+from app.services.cache_service import invalidate_session
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
@@ -523,6 +524,10 @@ async def logout(
         - Subsequent requests with same tokens will fail with 401
         - Session revocation is permanent and cannot be undone
     """
+    # Invalidate session cache BEFORE revoking in database (Task 1.11)
+    # This ensures cache is cleared even if DB commit fails
+    invalidate_session(session.token_jti)
+
     # Revoke the session (sets is_revoked=True, revoked_at=now())
     session.revoke()
     db.commit()
