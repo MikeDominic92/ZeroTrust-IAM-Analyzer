@@ -13,6 +13,7 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_session
 from app.core.logging import get_logger
 from app.schemas.auth import (
+    PasswordResetConfirm,
     PasswordResetRequest,
     TokenRefreshRequest,
     TokenResponse,
@@ -595,3 +596,81 @@ async def request_password_reset(
     return {
         "message": "If an account exists with this email, a password reset link has been sent"
     }
+
+
+@router.post(
+    "/password-reset/confirm",
+    status_code=status.HTTP_200_OK,
+    summary="Confirm password reset",
+    description="Reset password using reset token and new password",
+    responses={
+        200: {"description": "Password reset successful"},
+        400: {"description": "Invalid or expired reset token"},
+    },
+)
+async def confirm_password_reset(
+    reset_confirm: PasswordResetConfirm,
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Confirm password reset with token and new password.
+
+    Validates the reset token, updates the user's password, and clears the reset token.
+    Reset tokens are single-use and expire after 1 hour.
+
+    Args:
+        reset_confirm: Password reset confirmation (token and new password)
+        db: Database session
+
+    Returns:
+        Success message confirming password reset
+
+    Raises:
+        HTTPException 400: Invalid or expired reset token
+        HTTPException 400: Password validation failure (via Pydantic)
+
+    Example:
+        Request:
+        ```json
+        {
+            "token": "abcdef123456...",
+            "new_password": "NewSecurePass123!"
+        }
+        ```
+
+        Response (200):
+        ```json
+        {
+            "message": "Password has been reset successfully"
+        }
+        ```
+
+    Security Notes:
+        - Token must exist and not be expired (1-hour lifetime)
+        - New password validated for strength (uppercase, lowercase, digit required)
+        - Password hashed with bcrypt (12 rounds)
+        - Reset token cleared after successful reset (single-use)
+        - Updates last_password_change timestamp
+    """
+    # Get auth service
+    auth_service = get_auth_service(db)
+
+    try:
+        # Confirm password reset (validates token and updates password)
+        auth_service.confirm_password_reset(
+            token=reset_confirm.token,
+            new_password=reset_confirm.new_password,
+        )
+
+        # Return success message
+        return {"message": "Password has been reset successfully"}
+
+    except HTTPException:
+        # Re-raise HTTP exceptions from service layer (400)
+        raise
+    except Exception as e:
+        # Catch any unexpected errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred during password reset: {str(e)}",
+        )

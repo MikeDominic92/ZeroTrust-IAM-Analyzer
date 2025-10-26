@@ -296,6 +296,71 @@ class AuthService:
         # Attackers cannot determine if email exists in system
         return True
 
+    def confirm_password_reset(self, token: str, new_password: str) -> bool:
+        """
+        Confirm password reset with token and new password.
+
+        Validates reset token, updates user password, and clears reset token.
+
+        Args:
+            token: Password reset token
+            new_password: New password (plain text, will be hashed)
+
+        Returns:
+            True if password reset successful
+
+        Raises:
+            HTTPException 400: Invalid or expired reset token
+            HTTPException 500: Database error
+
+        Security Notes:
+            - Token must exist and not be expired
+            - New password is hashed with bcrypt (12 rounds)
+            - Reset token cleared after successful reset (single-use)
+            - Updates last_password_change timestamp
+        """
+        # Query user by reset token
+        user = self.db.query(User).filter(User.password_reset_token == token).first()
+
+        # Validate token exists
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token",
+            )
+
+        # Validate token not expired
+        if not user.password_reset_expires or user.password_reset_expires < datetime.utcnow():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token",
+            )
+
+        # Hash new password
+        new_password_hash = get_password_hash(new_password)
+
+        # Update user password
+        user.password_hash = new_password_hash
+
+        # Clear reset token fields (single-use token)
+        user.password_reset_token = None
+        user.password_reset_expires = None
+
+        # Update last password change timestamp
+        user.last_password_change = datetime.utcnow()
+
+        # Commit changes to database
+        self.db.commit()
+
+        # Log successful password reset
+        logger.info(
+            "password_reset_confirmed",
+            user_id=str(user.id),
+            email=user.email,
+        )
+
+        return True
+
 
 def get_auth_service(db: Session) -> AuthService:
     """
