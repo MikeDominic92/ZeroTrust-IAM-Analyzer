@@ -2,8 +2,8 @@
 
 **Last Updated**: 2025-10-25
 **Current Phase**: Phase 1 (Foundation - Authentication and Core Infrastructure)
-**Current Task**: Task 1.7 (Implement logout endpoint with session invalidation)
-**Overall Completion**: 14/77 tasks complete (18.2%)
+**Current Task**: Task 1.8 (Implement password reset request endpoint)
+**Overall Completion**: 15/77 tasks complete (19.5%)
 
 ---
 
@@ -13,7 +13,7 @@
 - [x] Phase 0: Project Setup and Environment Configuration (8/8 tasks - 100%)
 
 **In-Progress Phases:**
-- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (6/13 tasks - 46.2%)
+- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (7/13 tasks - 53.8%)
 
 **Pending Phases:**
 - [ ] Phase 2: MVP - GCP-Only Zero Trust Analysis (0/15 tasks)
@@ -93,8 +93,8 @@
 
 **Status**: IN PROGRESS 🔄
 **Started**: October 25, 2025
-**Current Task**: Task 1.7
-**Completion**: 6/13 tasks (46.2%)
+**Current Task**: Task 1.8
+**Completion**: 7/13 tasks (53.8%)
 
 ### Completed Tasks
 
@@ -214,11 +214,34 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **Testing**: Server startup successful on port 8080, endpoint registered at /api/v1/auth/refresh
 - **Deferred**: Unit tests and integration tests deferred to Task 1.12
 
+#### Task 1.7: Implement Logout Endpoint with Session Invalidation
+- **Status**: ✅ Complete
+- **Commit**: 663795d
+- **Date**: October 25, 2025
+- **Details**: Created POST /api/v1/auth/logout endpoint with session revocation and get_current_session dependency
+- **Files Modified**:
+  - backend/app/core/dependencies.py (+128 lines - added get_current_session dependency)
+  - backend/app/api/v1/auth.py (+67 lines - added logout endpoint)
+- **Functionality**:
+  - POST /api/v1/auth/logout requires authentication (uses get_current_session dependency)
+  - get_current_session() extracts JWT token and returns Session object
+  - Validates token type is "access" (rejects refresh tokens)
+  - Queries session by token_jti to verify it exists
+  - Checks session is not revoked and not expired
+  - Logout endpoint calls session.revoke() to mark session as revoked
+  - Sets is_revoked=True and revoked_at=datetime.utcnow()
+  - Commits session update to database
+  - Logs successful logout with session_id and user_id
+  - Returns {"message": "Successfully logged out"}
+  - Subsequent requests with same token will fail with 401 Unauthorized
+- **Session Revocation Flow**: Authenticate → Get session → Revoke → Commit → Log → Return success
+- **Reusable Dependency**: get_current_session() created for future endpoints needing Session object (Task 1.11 Redis caching)
+- **Error Handling**: 401 for invalid/expired/wrong-type tokens, revoked/expired sessions
+- **Testing**: Server startup successful on port 8080, logout endpoint registered at /api/v1/auth/logout
+- **Deferred**: Unit tests and integration tests deferred to Task 1.12
+
 ### Pending Tasks
 
-- [ ] Task 1.7: Implement logout endpoint with session invalidation
-- [ ] Task 1.6: Implement token refresh endpoint
-- [ ] Task 1.7: Implement logout endpoint with session invalidation
 - [ ] Task 1.8: Implement password reset request endpoint
 - [ ] Task 1.9: Implement password reset confirmation endpoint
 - [ ] Task 1.10: Implement RBAC enforcement middleware and decorators
@@ -232,15 +255,15 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ### Commits by Phase
 - **Phase 0**: 3 commits (07d6f7a, 1edd79b, ba18ec0)
-- **Phase 1**: 6 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c)
+- **Phase 1**: 7 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d)
 
 ### Code Statistics (Phase 0 + Phase 1 In-Progress)
 - **Python Files Created**: 13 (3 in Phase 0 migration, 10 in Phase 1)
 - **Configuration Files Created**: 3 (.pre-commit-config.yaml, pyproject.toml, .flake8)
 - **Database Migrations**: 2 (initial schema, auth models)
 - **Docker Containers**: 2 (PostgreSQL, Redis)
-- **API Endpoints**: 3 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh)
-- **Dependency Functions**: 1 (get_current_user for protected endpoints)
+- **API Endpoints**: 4 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout)
+- **Dependency Functions**: 2 (get_current_user for protected endpoints, get_current_session for session management)
 
 ### Test Coverage
 - **Phase 0**: No tests required (infrastructure setup)
@@ -256,8 +279,8 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **PR #3**: Phase 0 setup (feature/phase-0-setup branch) - Merged October 24, 2025
 
 ### Current Branch
-- **feature/phase-1-foundation**: Task 1.6 committed (f7be79c)
-- **Next Commit**: Task 1.7 implementation (Logout endpoint with session invalidation)
+- **feature/phase-1-foundation**: Task 1.7 committed (663795d)
+- **Next Commit**: Task 1.8 implementation (Password reset request endpoint)
 
 
 ---
@@ -284,13 +307,14 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Next Steps
 
 **Immediate (Next session)**:
-1. Begin Task 1.7: Logout endpoint with session invalidation
-   - Implement POST /api/v1/auth/logout endpoint
-   - Require authentication (use get_current_user dependency)
-   - Mark session as revoked in database
-   - Set revoked_at timestamp on session
+1. Begin Task 1.8: Password reset request endpoint
+   - Implement POST /api/v1/auth/password-reset/request endpoint
+   - Accept email address in request
+   - Validate user exists with email
+   - Generate secure reset token
+   - Store reset token with expiration
+   - Send password reset email (or log for testing)
    - Return success message
-   - Verify subsequent requests with same token fail
 
 **Short-term (Next few tasks)**:
 - Task 1.8-1.9: Password reset flow
@@ -314,4 +338,4 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ---
 
-**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.6 complete, Task 1.7 ready to start
+**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.7 complete, Task 1.8 ready to start
