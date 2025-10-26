@@ -94,6 +94,7 @@ def check_database_connection() -> bool:
         logger.error("database_connection_failed", error=str(e), exc_info=True)
         return False
 
+
 def init_connections() -> dict:
     """
     Initialize all database and cache connections.
@@ -149,7 +150,6 @@ def init_connections() -> dict:
     return status
 
 
-
 class DatabaseManager:
     """Database connection manager."""
 
@@ -174,7 +174,7 @@ class DatabaseManager:
         Returns:
             Health check result including database and Redis status
         """
-        from .redis import ping_redis, get_redis_info
+        from .redis import get_redis_info, ping_redis
 
         result = {
             "status": "unknown",

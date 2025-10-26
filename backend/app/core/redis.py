@@ -67,7 +67,11 @@ def init_redis() -> Optional[redis.Redis]:
 
         logger.info(
             "redis_initialized",
-            redis_url=settings.redis_url.split("@")[-1] if "@" in settings.redis_url else settings.redis_url,
+            redis_url=(
+                settings.redis_url.split("@")[-1]
+                if "@" in settings.redis_url
+                else settings.redis_url
+            ),
             max_connections=10,
         )
 
@@ -77,7 +81,11 @@ def init_redis() -> Optional[redis.Redis]:
         logger.warning(
             "redis_connection_failed",
             error=str(e),
-            redis_url=settings.redis_url.split("@")[-1] if "@" in settings.redis_url else settings.redis_url,
+            redis_url=(
+                settings.redis_url.split("@")[-1]
+                if "@" in settings.redis_url
+                else settings.redis_url
+            ),
             message="Redis unavailable - falling back to database-only mode",
         )
         return None
@@ -118,7 +126,6 @@ def get_redis_client() -> Optional[redis.Redis]:
         - Callers should always check for None before using
         - Automatically handles reconnection via connection pool health checks
     """
-    global _redis_client
 
     # Return cached client if already initialized
     if _redis_client is not None:

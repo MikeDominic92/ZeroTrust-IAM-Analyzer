@@ -6,7 +6,6 @@ during login, token validation, and logout operations.
 """
 
 import pytest
-
 from app.core.redis import ping_redis
 
 
