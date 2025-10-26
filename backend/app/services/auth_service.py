@@ -5,10 +5,12 @@ This module provides authentication business logic including user registration,
 login, token management, and password reset functionality.
 """
 
+import secrets
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
+from app.core.logging import get_logger
 from app.core.security import get_password_hash, verify_password
 from app.models.role import Role
 from app.models.session import Session as SessionModel
@@ -16,6 +18,8 @@ from app.models.user import User, UserStatus
 from app.schemas.auth import UserRegisterRequest
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+
+logger = get_logger(__name__)
 
 
 class AuthService:
@@ -240,6 +244,57 @@ class AuthService:
         self.db.refresh(new_session)
 
         return new_session
+
+    def request_password_reset(self, email: str) -> bool:
+        """
+        Request password reset for user account.
+
+        Generates a secure reset token and stores it with expiration timestamp.
+        Returns success regardless of whether user exists to prevent user enumeration.
+
+        Args:
+            email: User's email address
+
+        Returns:
+            Always returns True to prevent user enumeration
+
+        Security Notes:
+            - Generic response prevents user enumeration attacks
+            - Token is cryptographically secure (secrets.token_urlsafe)
+            - Token expires after 1 hour
+            - Only one active reset token per user (overwrites previous)
+        """
+        # Query user by email (lowercase for case-insensitive lookup)
+        user = self.get_user_by_email(email)
+
+        # If user exists, generate and store reset token
+        if user:
+            # Generate cryptographically secure reset token (256 bits)
+            reset_token = secrets.token_urlsafe(32)
+
+            # Set token expiration to 1 hour from now
+            expires_at = datetime.utcnow() + timedelta(hours=1)
+
+            # Update user record with reset token and expiration
+            user.password_reset_token = reset_token
+            user.password_reset_expires = expires_at
+
+            # Commit changes to database
+            self.db.commit()
+
+            # Log reset token for testing (no email service configured)
+            # In production, this would send an email with a reset link
+            logger.info(
+                "password_reset_requested",
+                user_id=str(user.id),
+                email=user.email,
+                reset_token=reset_token,
+                expires_at=expires_at.isoformat(),
+            )
+
+        # Always return True to prevent user enumeration
+        # Attackers cannot determine if email exists in system
+        return True
 
 
 def get_auth_service(db: Session) -> AuthService:

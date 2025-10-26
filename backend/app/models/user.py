@@ -199,6 +199,15 @@ class User(Base):
         Text, nullable=True, comment="Backup codes for two-factor authentication"
     )
 
+    # Password reset
+    password_reset_token: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True, index=True, comment="Password reset token"
+    )
+
+    password_reset_expires: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True, comment="Timestamp when password reset token expires"
+    )
+
     # Session management
     session_token: Mapped[Optional[str]] = mapped_column(
         String(255), nullable=True, index=True, comment="Current active session token"

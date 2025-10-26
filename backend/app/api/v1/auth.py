@@ -13,6 +13,7 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_session
 from app.core.logging import get_logger
 from app.schemas.auth import (
+    PasswordResetRequest,
     TokenRefreshRequest,
     TokenResponse,
     UserLoginRequest,
@@ -534,3 +535,63 @@ async def logout(
     )
 
     return {"message": "Successfully logged out"}
+
+
+@router.post(
+    "/password-reset/request",
+    status_code=status.HTTP_200_OK,
+    summary="Request password reset",
+    description="Request a password reset token for the specified email address",
+    responses={
+        200: {"description": "Password reset request processed successfully"},
+    },
+)
+async def request_password_reset(
+    reset_request: PasswordResetRequest,
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Request password reset for user account.
+
+    Generates a secure reset token and stores it with 1-hour expiration.
+    Returns success regardless of whether the email exists to prevent user enumeration.
+
+    Args:
+        reset_request: Password reset request containing email address
+        db: Database session
+
+    Returns:
+        Generic success message
+
+    Example:
+        Request:
+        ```json
+        {
+            "email": "analyst@example.com"
+        }
+        ```
+
+        Response (200):
+        ```json
+        {
+            "message": "If an account exists with this email, a password reset link has been sent"
+        }
+        ```
+
+    Security Notes:
+        - Generic response prevents user enumeration attacks
+        - Token is cryptographically secure (256 bits)
+        - Token expires after 1 hour
+        - Token is logged for testing (no email service configured)
+        - In production, token would be sent via email
+    """
+    # Get auth service
+    auth_service = get_auth_service(db)
+
+    # Request password reset (always returns True for security)
+    auth_service.request_password_reset(reset_request.email)
+
+    # Return generic success message (prevents user enumeration)
+    return {
+        "message": "If an account exists with this email, a password reset link has been sent"
+    }
