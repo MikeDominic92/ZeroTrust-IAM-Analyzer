@@ -210,3 +210,129 @@ def get_current_user(
     )
 
     return user
+
+
+def get_current_session(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> SessionModel:
+    """
+    Dependency function to get current active session from JWT token.
+
+    This function validates JWT tokens and returns the active Session object.
+    Useful for endpoints that need to modify session state (e.g., logout).
+
+    Args:
+        credentials: HTTP Bearer credentials from Authorization header
+        db: Database session dependency
+
+    Returns:
+        Active Session object
+
+    Raises:
+        HTTPException 401: For any session validation failure
+
+    Example:
+        ```python
+        from fastapi import APIRouter, Depends
+        from app.core.dependencies import get_current_session
+        from app.models.session import Session
+
+        router = APIRouter()
+
+        @router.post("/logout")
+        async def logout(
+            session: Session = Depends(get_current_session)
+        ):
+            session.revoke()
+            return {"message": "Logged out"}
+        ```
+    """
+    # Extract token from credentials
+    token = credentials.credentials
+
+    # Define credential exception for all authentication failures
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        # Decode and verify JWT token
+        payload = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[settings.algorithm],
+        )
+
+        # Extract token JTI for session lookup
+        token_jti: Optional[str] = payload.get("jti")
+        if token_jti is None:
+            logger.warning("token_missing_jti")
+            raise credentials_exception
+
+        # Validate token type is "access" (reject refresh tokens)
+        token_type: Optional[str] = payload.get("type")
+        if token_type != "access":
+            logger.warning(
+                "invalid_token_type_for_session",
+                token_type=token_type,
+                expected="access",
+            )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+    except JWTError as e:
+        # Token decode failed (invalid signature, expired, malformed)
+        logger.warning("jwt_decode_failed_for_session", error=str(e))
+        raise credentials_exception
+
+    # Query session by token JTI
+    session = db.query(SessionModel).filter(SessionModel.token_jti == token_jti).first()
+
+    if session is None:
+        logger.warning("session_not_found", token_jti=token_jti)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or revoked session",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check if session is revoked
+    if session.is_revoked:
+        logger.warning(
+            "session_revoked",
+            token_jti=token_jti,
+            revoked_at=session.revoked_at,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session has been revoked",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check if session has expired
+    if session.expires_at < datetime.utcnow():
+        logger.warning(
+            "session_expired",
+            token_jti=token_jti,
+            expires_at=session.expires_at,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Log successful session retrieval
+    logger.debug(
+        "session_retrieved",
+        session_id=str(session.id),
+        token_jti=token_jti,
+    )
+
+    return session

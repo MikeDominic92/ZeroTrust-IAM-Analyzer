@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 
 from app.core.config import get_settings
 from app.core.database import get_db
+from app.core.dependencies import get_current_session
+from app.core.logging import get_logger
 from app.schemas.auth import (
     TokenRefreshRequest,
     TokenResponse,
@@ -26,6 +28,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 settings = get_settings()
+logger = get_logger(__name__)
 
 # Create router
 router = APIRouter()
@@ -465,3 +468,69 @@ async def refresh_token(
         token_type="bearer",
         expires_in=int(access_token_expires.total_seconds()),
     )
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_200_OK,
+    summary="User logout",
+    description="Logout user and invalidate current session",
+    responses={
+        200: {"description": "Successfully logged out"},
+        401: {"description": "Not authenticated or invalid token"},
+    },
+)
+async def logout(
+    session: SessionModel = Depends(get_current_session),
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Logout user and invalidate current session.
+
+    This endpoint revokes the current session, making the access token
+    and refresh token pair invalid for future requests. The user must
+    login again to obtain new tokens.
+
+    Args:
+        session: Current active session from get_current_session dependency
+        db: Database session
+
+    Returns:
+        Success message confirming logout
+
+    Raises:
+        HTTPException 401: If not authenticated or token is invalid
+
+    Example:
+        Request:
+        ```
+        POST /api/v1/auth/logout
+        Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+        ```
+
+        Response (200):
+        ```json
+        {
+            "message": "Successfully logged out"
+        }
+        ```
+
+    Security Notes:
+        - Requires valid access token (authentication required)
+        - Session is immediately revoked in database
+        - Both access and refresh tokens become invalid
+        - Subsequent requests with same tokens will fail with 401
+        - Session revocation is permanent and cannot be undone
+    """
+    # Revoke the session (sets is_revoked=True, revoked_at=now())
+    session.revoke()
+    db.commit()
+
+    # Log successful logout
+    logger.info(
+        "user_logged_out",
+        session_id=str(session.id),
+        user_id=str(session.user_id),
+    )
+
+    return {"message": "Successfully logged out"}
