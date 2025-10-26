@@ -5,9 +5,8 @@ This module aggregates all v1 API routers (auth, scans, policies, etc.)
 and provides a single router to include in the main FastAPI application.
 """
 
-from fastapi import APIRouter
-
 from app.api.v1 import auth
+from fastapi import APIRouter
 
 # Create main API router
 api_router = APIRouter()

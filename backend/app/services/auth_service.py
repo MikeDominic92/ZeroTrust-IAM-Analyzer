@@ -9,13 +9,12 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
-
 from app.core.security import get_password_hash, verify_password
 from app.models.role import Role
 from app.models.user import User, UserStatus
 from app.schemas.auth import UserRegisterRequest
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 
 class AuthService:

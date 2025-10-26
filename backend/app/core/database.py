@@ -9,7 +9,6 @@ from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
 from .config import get_settings
 from .logging import get_logger

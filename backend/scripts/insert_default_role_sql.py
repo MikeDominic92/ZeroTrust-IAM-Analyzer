@@ -10,13 +10,15 @@ cursor = conn.cursor()
 
 try:
     # Insert default User role
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO role (id, name, display_name, description, permissions, is_system_role, is_active, version)
         VALUES (gen_random_uuid(), 'User', 'User', 'Standard user with basic permissions',
                 '["read_own_data", "update_own_profile"]', true, true, 1)
         ON CONFLICT (name) DO NOTHING
         RETURNING name;
-    """)
+    """
+    )
 
     result = cursor.fetchone()
     if result:

@@ -8,14 +8,14 @@ CORS middleware setup, API router inclusion, and health check endpoints.
 from contextlib import asynccontextmanager
 from typing import Any, Dict
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from .api.v1.api import api_router
 from .core.config import get_settings
 from .core.database import check_database_connection, get_database_info
 from .core.logging import RequestLoggingMiddleware, configure_logging, get_logger
-from .core.security import get_token_manager
 
 # Configure logging
 configure_logging()
@@ -164,7 +164,7 @@ async def liveness_check() -> Dict[str, Any]:
 
 
 @app.get("/health/detailed", tags=["Health"])
-async def detailed_health_check() -> Dict[str, any]:
+async def detailed_health_check() -> Dict[str, Any]:
     """
     Detailed health check endpoint.
 
@@ -194,7 +194,7 @@ async def detailed_health_check() -> Dict[str, any]:
 
 # Root endpoint
 @app.get("/", tags=["Root"])
-async def root() -> Dict[str, any]:
+async def root() -> Dict[str, Any]:
     """
     Root endpoint with application information.
 
@@ -212,7 +212,7 @@ async def root() -> Dict[str, any]:
 
 
 @app.get(f"{settings.api_prefix}/info", tags=["Root"])
-async def app_info() -> Dict[str, any]:
+async def app_info() -> Dict[str, Any]:
     """
     Application information endpoint.
 
@@ -241,8 +241,6 @@ async def app_info() -> Dict[str, any]:
 
 
 # Include API v1 router
-from app.api.v1.api import api_router
-
 app.include_router(api_router, prefix=settings.api_prefix)
 
 

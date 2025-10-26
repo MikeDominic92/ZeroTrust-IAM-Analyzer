@@ -7,10 +7,8 @@ authentication, and other common requirements.
 
 from typing import Generator
 
-from fastapi import Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
 from app.core.database import SessionLocal
+from sqlalchemy.orm import Session
 
 
 def get_db() -> Generator[Session, None, None]:

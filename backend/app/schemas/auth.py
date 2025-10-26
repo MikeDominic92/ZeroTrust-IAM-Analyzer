@@ -6,10 +6,9 @@ registration, login, token management, and password reset.
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
-
 
 # ===================================================
 # Registration Schemas
@@ -20,9 +19,7 @@ class UserRegisterRequest(BaseModel):
     """Schema for user registration request."""
 
     email: EmailStr = Field(..., description="User's email address")
-    username: str = Field(
-        ..., min_length=3, max_length=50, description="Unique username for login"
-    )
+    username: str = Field(..., min_length=3, max_length=50, description="Unique username for login")
     password: str = Field(..., min_length=8, max_length=100, description="User's password")
     first_name: Optional[str] = Field(None, max_length=100, description="User's first name")
     last_name: Optional[str] = Field(None, max_length=100, description="User's last name")

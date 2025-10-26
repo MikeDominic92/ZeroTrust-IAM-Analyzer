@@ -5,12 +5,11 @@ This module provides authentication endpoints including registration,
 login, token refresh, logout, and password reset.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
 from app.core.database import get_db
 from app.schemas.auth import UserRegisterRequest, UserRegisterResponse
-from app.services.auth_service import AuthService, get_auth_service
+from app.services.auth_service import get_auth_service
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
 # Create router
 router = APIRouter()

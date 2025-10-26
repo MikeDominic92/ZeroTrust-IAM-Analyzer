@@ -5,11 +5,9 @@ This module contains the Role model for flexible role-based access control (RBAC
 Supports dynamic role creation with custom permissions.
 """
 
-import uuid
 from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Boolean, String, Text
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
