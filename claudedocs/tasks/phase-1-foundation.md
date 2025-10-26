@@ -500,15 +500,15 @@ Error Response (400):
 **Time Estimate**: 2-3 hours
 
 **Acceptance Criteria**:
-- [ ] `require_role()` dependency function created
-- [ ] `require_permission()` dependency function created
-- [ ] Functions verify user has required role(s)
-- [ ] Returns 403 Forbidden if user lacks permission
-- [ ] Supports multiple role requirements (OR logic)
-- [ ] Works with `get_current_user()` dependency
-- [ ] Unit tests verify role checking logic
-- [ ] Integration tests verify endpoint protection
-- [ ] Documentation includes usage examples
+- [x] `require_role()` dependency function created ✅
+- [x] `require_permission()` dependency function created ✅
+- [x] Functions verify user has required role(s) ✅
+- [x] Returns 403 Forbidden if user lacks permission ✅
+- [x] Supports multiple role requirements (OR logic) ✅
+- [x] Works with `get_current_user()` dependency ✅
+- [ ] Unit tests verify role checking logic (deferred to Task 1.12)
+- [ ] Integration tests verify endpoint protection (deferred to Task 1.12)
+- [x] Documentation includes usage examples ✅
 
 **Implementation Steps**:
 1. Create `require_role()` in `core/dependencies.py`
