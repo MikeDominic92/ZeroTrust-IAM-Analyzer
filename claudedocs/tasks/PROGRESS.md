@@ -2,8 +2,8 @@
 
 **Last Updated**: 2025-10-25
 **Current Phase**: Phase 1 (Foundation - Authentication and Core Infrastructure)
-**Current Task**: Task 1.10 (Implement RBAC enforcement middleware and decorators)
-**Overall Completion**: 17/77 tasks complete (22.1%)
+**Current Task**: Task 1.11 (Implement session management with Redis caching)
+**Overall Completion**: 18/77 tasks complete (23.4%)
 
 ---
 
@@ -13,7 +13,7 @@
 - [x] Phase 0: Project Setup and Environment Configuration (8/8 tasks - 100%)
 
 **In-Progress Phases:**
-- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (9/13 tasks - 69.2%)
+- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (10/13 tasks - 76.9%)
 
 **Pending Phases:**
 - [ ] Phase 2: MVP - GCP-Only Zero Trust Analysis (0/15 tasks)
@@ -93,8 +93,8 @@
 
 **Status**: IN PROGRESS 🔄
 **Started**: October 25, 2025
-**Current Task**: Task 1.10
-**Completion**: 9/13 tasks (69.2%)
+**Current Task**: Task 1.11
+**Completion**: 10/13 tasks (76.9%)
 
 ### Completed Tasks
 
@@ -314,9 +314,54 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **Testing**: Server startup successful on port 8080, endpoint registered at /api/v1/auth/password-reset/confirm
 - **Deferred**: Unit tests and integration tests deferred to Task 1.12
 
+#### Task 1.10: Implement RBAC Enforcement Middleware and Decorators
+- **Status**: ✅ Complete
+- **Commit**: 3b06f84
+- **Date**: October 25, 2025
+- **Details**: Created role-based and permission-based access control using FastAPI dependency factory pattern
+- **Files Modified**:
+  - backend/app/core/dependencies.py (+216 lines - added require_role and require_permission factories)
+  - backend/app/api/v1/auth.py (+41 lines - added test endpoint and imports)
+- **Functionality**:
+  - require_role(allowed_roles) factory function for role-based access control
+  - require_permission(required_permissions) factory function for permission-based access control
+  - Both use FastAPI Depends() dependency injection pattern
+  - Support multiple roles/permissions with OR logic (any match grants access)
+  - Extract active role names from user.roles (checks role.is_active == True)
+  - Parse permissions from Role.permissions JSON field
+  - Raise HTTPException 403 Forbidden if user lacks required role/permission
+  - Comprehensive logging for access control events (granted/denied)
+  - Clear error messages with required role/permission information
+- **RBAC Factory Pattern**:
+  - require_role(["Admin"]) returns dependency callable that checks user has Admin role
+  - require_permission(["policy.create"]) checks user has policy.create permission
+  - Works with get_current_user() dependency (user already authenticated with roles loaded)
+  - Usage: `_: None = Depends(require_role(["Admin"]))` in endpoint signature
+- **Test Endpoint**:
+  - Created GET /api/v1/auth/test-rbac-admin (requires Admin role)
+  - Demonstrates RBAC enforcement in practice
+  - Returns user info (id, email, roles) if access granted
+  - Returns 403 Forbidden if user lacks Admin role
+- **Security Features**:
+  - Role name case-sensitive matching
+  - Permission string case-sensitive matching
+  - Only active roles checked (role.is_active filtering)
+  - Invalid JSON in role.permissions logged as error and skipped
+  - Logging includes user_id, username, matched role/permission for audit trail
+  - Access denied logging includes user_roles/user_permissions for debugging
+- **Code Quality**:
+  - Comprehensive docstrings with usage examples (single and multiple role requirements)
+  - Type hints for all parameters and return values
+  - Code formatted with Black and isort (pre-commit hooks)
+- **Error Handling**:
+  - 403 Forbidden for insufficient role (with list of required roles)
+  - 403 Forbidden for insufficient permission (with list of required permissions)
+  - Graceful handling of malformed permissions JSON (logged and skipped)
+- **Testing**: Server startup successful on port 8080, test endpoint registered at /api/v1/auth/test-rbac-admin
+- **Deferred**: Unit tests and integration tests deferred to Task 1.12, existing linting/type warnings (pre-existing)
+
 ### Pending Tasks
 
-- [ ] Task 1.10: Implement RBAC enforcement middleware and decorators
 - [ ] Task 1.11: Implement session management with Redis caching
 - [ ] Task 1.12: Write comprehensive security tests
 - [ ] Task 1.13: Generate OpenAPI documentation for authentication endpoints
@@ -327,15 +372,15 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ### Commits by Phase
 - **Phase 0**: 3 commits (07d6f7a, 1edd79b, ba18ec0)
-- **Phase 1**: 9 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d, fe561d4, 92e3259)
+- **Phase 1**: 10 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d, fe561d4, 92e3259, 3b06f84)
 
 ### Code Statistics (Phase 0 + Phase 1 In-Progress)
 - **Python Files Created**: 13 (3 in Phase 0 migration, 10 in Phase 1)
 - **Configuration Files Created**: 3 (.pre-commit-config.yaml, pyproject.toml, .flake8)
 - **Database Migrations**: 3 (initial schema, auth models, password reset fields)
 - **Docker Containers**: 2 (PostgreSQL, Redis)
-- **API Endpoints**: 6 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout, POST /api/v1/auth/password-reset/request, POST /api/v1/auth/password-reset/confirm)
-- **Dependency Functions**: 2 (get_current_user for protected endpoints, get_current_session for session management)
+- **API Endpoints**: 7 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout, POST /api/v1/auth/password-reset/request, POST /api/v1/auth/password-reset/confirm, GET /api/v1/auth/test-rbac-admin)
+- **Dependency Functions**: 4 (get_current_user for protected endpoints, get_current_session for session management, require_role for RBAC, require_permission for permission-based access)
 
 ### Test Coverage
 - **Phase 0**: No tests required (infrastructure setup)
@@ -351,8 +396,8 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **PR #3**: Phase 0 setup (feature/phase-0-setup branch) - Merged October 24, 2025
 
 ### Current Branch
-- **feature/phase-1-foundation**: Task 1.9 committed (92e3259)
-- **Next Commit**: Task 1.10 implementation (RBAC enforcement middleware and decorators)
+- **feature/phase-1-foundation**: Task 1.10 committed (3b06f84)
+- **Next Commit**: Task 1.11 implementation (Session management with Redis caching)
 
 
 ---
@@ -366,7 +411,7 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ### Database Schema
 - **Current Migration**: fbe8b411d4e5
 - **Tables**: user (with password reset fields), role, session, user_roles, scan, policy, recommendation, alembic_version
-- **Next Migration**: None required for Task 1.10 (uses existing schema)
+- **Next Migration**: None required for Task 1.11 (uses existing schema, adds Redis caching)
 
 ### Development Environment
 - **Python**: 3.13
@@ -379,22 +424,21 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Next Steps
 
 **Immediate (Next session)**:
-1. Begin Task 1.10: RBAC enforcement middleware and decorators
-   - Create RBAC decorator factory for role-based access control
-   - Implement permission checking logic
-   - Create require_role decorator for endpoint protection
-   - Create require_permission decorator for granular access control
-   - Integrate with existing get_current_user dependency
-   - Test with protected endpoints
+1. Begin Task 1.11: Session management with Redis caching
+   - Configure Redis connection in core/database.py
+   - Implement session caching with 15-minute TTL
+   - Modify get_current_user() to check Redis before database
+   - Implement cache invalidation on logout/session revocation
+   - Set cache key format: session:{token_jti}
+   - Test performance improvement from caching
 
 **Short-term (Next few tasks)**:
-- Task 1.10: RBAC enforcement middleware
 - Task 1.11: Session management with Redis caching
 - Task 1.12: Write comprehensive security tests
 - Task 1.13: Generate OpenAPI documentation
 
 **Long-term**:
-- Complete Phase 1 (4 tasks remaining)
+- Complete Phase 1 (3 tasks remaining)
 - Begin Phase 2 (GCP integration and Zero Trust analysis)
 
 ---
@@ -402,10 +446,10 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Notes
 
 - **Tracking Restored**: PROGRESS.md created October 25, 2025 to restore checkpoint system
-- **TODO.md Status**: Updated to reflect Task 1.9 completion
+- **TODO.md Status**: Updated to reflect Task 1.10 completion
 - **GitHub Workflow**: Following RULES_GITHUB_PROJECTS.md (commit after every task, tracking updates)
 - **Development Mode**: Standard Claude Code with ultrathink (CodingGod mode available for future tasks)
 
 ---
 
-**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.9 complete, Task 1.10 ready to start
+**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.10 complete, Task 1.11 ready to start
