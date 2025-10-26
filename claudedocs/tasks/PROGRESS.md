@@ -2,8 +2,8 @@
 
 **Last Updated**: 2025-10-25
 **Current Phase**: Phase 1 (Foundation - Authentication and Core Infrastructure)
-**Current Task**: Task 1.8 (Implement password reset request endpoint)
-**Overall Completion**: 15/77 tasks complete (19.5%)
+**Current Task**: Task 1.9 (Implement password reset confirmation endpoint)
+**Overall Completion**: 16/77 tasks complete (20.8%)
 
 ---
 
@@ -13,7 +13,7 @@
 - [x] Phase 0: Project Setup and Environment Configuration (8/8 tasks - 100%)
 
 **In-Progress Phases:**
-- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (7/13 tasks - 53.8%)
+- [ ] Phase 1: Foundation - Authentication and Core Infrastructure (8/13 tasks - 61.5%)
 
 **Pending Phases:**
 - [ ] Phase 2: MVP - GCP-Only Zero Trust Analysis (0/15 tasks)
@@ -93,8 +93,8 @@
 
 **Status**: IN PROGRESS 🔄
 **Started**: October 25, 2025
-**Current Task**: Task 1.8
-**Completion**: 7/13 tasks (53.8%)
+**Current Task**: Task 1.9
+**Completion**: 8/13 tasks (61.5%)
 
 ### Completed Tasks
 
@@ -240,9 +240,40 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **Testing**: Server startup successful on port 8080, logout endpoint registered at /api/v1/auth/logout
 - **Deferred**: Unit tests and integration tests deferred to Task 1.12
 
+#### Task 1.8: Implement Password Reset Request Endpoint
+- **Status**: ✅ Complete
+- **Commit**: fe561d4
+- **Date**: October 25, 2025
+- **Details**: Created POST /api/v1/auth/password-reset/request endpoint with secure token generation
+- **Files Modified**:
+  - backend/app/models/user.py (+9 lines - added password_reset_token and password_reset_expires fields)
+  - backend/alembic/versions/fbe8b411d4e5_add_password_reset_fields_to_user_model.py (+35 lines - new migration)
+  - backend/app/services/auth_service.py (+50 lines - added request_password_reset method and logging)
+  - backend/app/api/v1/auth.py (+62 lines - added password reset request endpoint)
+- **Database Changes**:
+  - Added password_reset_token field (String 255, nullable, indexed)
+  - Added password_reset_expires field (DateTime with timezone, nullable)
+  - Migration fbe8b411d4e5 created and applied successfully
+- **Functionality**:
+  - POST /api/v1/auth/password-reset/request accepts PasswordResetRequest (email)
+  - AuthService.request_password_reset() generates cryptographically secure token (secrets.token_urlsafe with 256 bits)
+  - Token expiration set to 1 hour from generation
+  - Stores token and expiration in user record
+  - Logs reset token for testing (logger.info with user_id, email, token, expiration)
+  - Returns generic success message regardless of email existence (prevents user enumeration)
+  - No email service configured yet - token logged instead of sent
+- **Password Reset Request Flow**: Receive email → Query user → Generate token → Store token+expiry → Log token → Return generic success
+- **Security Features**:
+  - User enumeration prevention (always returns success)
+  - Cryptographically secure token generation
+  - 1-hour token expiration
+  - Only one active reset token per user (overwrites previous)
+- **Error Handling**: No error responses (always returns 200 with generic message)
+- **Testing**: Server startup successful on port 8080, endpoint registered at /api/v1/auth/password-reset/request
+- **Deferred**: Email sending functionality (will be added in production), unit tests deferred to Task 1.12
+
 ### Pending Tasks
 
-- [ ] Task 1.8: Implement password reset request endpoint
 - [ ] Task 1.9: Implement password reset confirmation endpoint
 - [ ] Task 1.10: Implement RBAC enforcement middleware and decorators
 - [ ] Task 1.11: Implement session management with Redis caching
@@ -255,14 +286,14 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ### Commits by Phase
 - **Phase 0**: 3 commits (07d6f7a, 1edd79b, ba18ec0)
-- **Phase 1**: 7 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d)
+- **Phase 1**: 8 commits (6fbf250, 848ca34, 6c920b0, 86c2f7f, 2a54687, f7be79c, 663795d, fe561d4)
 
 ### Code Statistics (Phase 0 + Phase 1 In-Progress)
 - **Python Files Created**: 13 (3 in Phase 0 migration, 10 in Phase 1)
 - **Configuration Files Created**: 3 (.pre-commit-config.yaml, pyproject.toml, .flake8)
-- **Database Migrations**: 2 (initial schema, auth models)
+- **Database Migrations**: 3 (initial schema, auth models, password reset fields)
 - **Docker Containers**: 2 (PostgreSQL, Redis)
-- **API Endpoints**: 4 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout)
+- **API Endpoints**: 5 (POST /api/v1/auth/register, POST /api/v1/auth/login, POST /api/v1/auth/refresh, POST /api/v1/auth/logout, POST /api/v1/auth/password-reset/request)
 - **Dependency Functions**: 2 (get_current_user for protected endpoints, get_current_session for session management)
 
 ### Test Coverage
@@ -279,8 +310,8 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **PR #3**: Phase 0 setup (feature/phase-0-setup branch) - Merged October 24, 2025
 
 ### Current Branch
-- **feature/phase-1-foundation**: Task 1.7 committed (663795d)
-- **Next Commit**: Task 1.8 implementation (Password reset request endpoint)
+- **feature/phase-1-foundation**: Task 1.8 committed (fe561d4)
+- **Next Commit**: Task 1.9 implementation (Password reset confirmation endpoint)
 
 
 ---
@@ -292,9 +323,9 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 - **Redis 7**: Running on port 6379
 
 ### Database Schema
-- **Current Migration**: 7dbf784c6278
-- **Tables**: user, role, session, user_roles, scan, policy, recommendation, alembic_version
-- **Next Migration**: None required for Task 1.4 (uses existing schema)
+- **Current Migration**: fbe8b411d4e5
+- **Tables**: user (with password reset fields), role, session, user_roles, scan, policy, recommendation, alembic_version
+- **Next Migration**: None required for Task 1.9 (uses existing schema)
 
 ### Development Environment
 - **Python**: 3.13
@@ -307,17 +338,16 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 ## Next Steps
 
 **Immediate (Next session)**:
-1. Begin Task 1.8: Password reset request endpoint
-   - Implement POST /api/v1/auth/password-reset/request endpoint
-   - Accept email address in request
-   - Validate user exists with email
-   - Generate secure reset token
-   - Store reset token with expiration
-   - Send password reset email (or log for testing)
+1. Begin Task 1.9: Password reset confirmation endpoint
+   - Implement POST /api/v1/auth/password-reset/confirm endpoint
+   - Accept reset token and new password
+   - Validate token exists and not expired
+   - Update user password hash
+   - Clear reset token and expiration
    - Return success message
 
 **Short-term (Next few tasks)**:
-- Task 1.8-1.9: Password reset flow
+- Task 1.9: Complete password reset flow
 - Task 1.10: RBAC enforcement middleware
 - Task 1.11: Session management with Redis caching
 - Task 1.12: Write comprehensive security tests
@@ -338,4 +368,4 @@ n#### Task 1.2: Create Alembic Migrations for User, Role, and Session Models
 
 ---
 
-**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.7 complete, Task 1.8 ready to start
+**Last Checkpoint**: October 25, 2025 - Phase 1 Task 1.8 complete, Task 1.9 ready to start
