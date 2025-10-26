@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from app.core.config import get_settings
 from app.core.database import get_db
 from app.schemas.auth import (
+    TokenRefreshRequest,
     TokenResponse,
     UserLoginRequest,
     UserLoginResponse,
@@ -18,9 +19,10 @@ from app.schemas.auth import (
     UserRegisterRequest,
     UserRegisterResponse,
 )
+from app.models.session import Session as SessionModel
 from app.services.auth_service import get_auth_service
 from fastapi import APIRouter, Depends, HTTPException, status
-from jose import jwt
+from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 settings = get_settings()
@@ -262,3 +264,204 @@ async def login(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred during login: {str(e)}",
         )
+
+
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Refresh access token",
+    description="Generate new access and refresh tokens using valid refresh token",
+    responses={
+        200: {"description": "Tokens refreshed successfully"},
+        401: {"description": "Invalid or expired refresh token"},
+    },
+)
+async def refresh_token(
+    refresh_request: TokenRefreshRequest,
+    db: Session = Depends(get_db),
+) -> TokenResponse:
+    """
+    Refresh access token using valid refresh token.
+
+    This endpoint implements token rotation for enhanced security:
+    - Validates the provided refresh token
+    - Generates a NEW access token (30-minute expiry)
+    - Generates a NEW refresh token (7-day expiry)
+    - Updates the session record with new token JTIs
+    - Invalidates the old refresh token (single-use)
+
+    Args:
+        refresh_request: Refresh token request containing refresh_token
+        db: Database session
+
+    Returns:
+        New token pair (access + refresh tokens)
+
+    Raises:
+        HTTPException 401: For any refresh token validation failure
+
+    Example:
+        Request:
+        ```json
+        {
+            "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
+        }
+        ```
+
+        Response (200):
+        ```json
+        {
+            "access_token": "eyJhbGciOiJIUzI1NiIs...",
+            "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
+            "token_type": "bearer",
+            "expires_in": 1800
+        }
+        ```
+
+    Security Notes:
+        - Token rotation: Each refresh generates new tokens, old ones invalidated
+        - Single-use tokens: Prevents token replay attacks
+        - Session validation: Verifies session is not revoked or expired
+        - Generic error messages: Avoids leaking information about token validity
+    """
+    # Define credential exception for all authentication failures
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate refresh token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        # Decode and verify refresh token
+        payload = jwt.decode(
+            refresh_request.refresh_token,
+            settings.secret_key,
+            algorithms=[settings.algorithm],
+        )
+
+        # Extract user ID from subject claim
+        user_id_str = payload.get("sub")
+        if user_id_str is None:
+            raise credentials_exception
+
+        # Extract refresh token JTI for session lookup
+        refresh_token_jti = payload.get("jti")
+        if refresh_token_jti is None:
+            raise credentials_exception
+
+        # Validate token type is "refresh" (reject access tokens)
+        token_type = payload.get("type")
+        if token_type != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Convert user ID to UUID
+        try:
+            user_id = uuid.UUID(user_id_str)
+        except (ValueError, AttributeError):
+            raise credentials_exception
+
+    except JWTError:
+        # Token decode failed (invalid signature, expired, malformed)
+        raise credentials_exception
+
+    # Query session by refresh_token_jti (NOT token_jti which is for access tokens)
+    session = (
+        db.query(SessionModel)
+        .filter(SessionModel.refresh_token_jti == refresh_token_jti)
+        .first()
+    )
+
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or revoked session",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check if session is revoked
+    if session.is_revoked:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session has been revoked",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check if session has expired
+    if session.expires_at < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Query user to include in new access token payload
+    auth_service = get_auth_service(db)
+    user = auth_service.get_user_by_id(user_id)
+
+    if user is None:
+        raise credentials_exception
+
+    # Verify user account is active
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is inactive",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Generate NEW token JTIs for rotation (old tokens become invalid)
+    new_access_token_jti = str(uuid.uuid4())
+    new_refresh_token_jti = str(uuid.uuid4())
+
+    # Calculate token expiration times
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+    access_token_exp_time = datetime.utcnow() + access_token_expires
+    refresh_token_exp_time = datetime.utcnow() + timedelta(days=7)
+
+    # Create new access token with full payload
+    access_token_payload = {
+        "sub": str(user.id),
+        "email": user.email,
+        "roles": [role.name for role in user.roles],
+        "jti": new_access_token_jti,
+        "type": "access",
+        "exp": int(access_token_exp_time.timestamp()),
+    }
+    new_access_token = jwt.encode(
+        access_token_payload,
+        settings.secret_key,
+        algorithm=settings.algorithm,
+    )
+
+    # Create new refresh token with minimal payload (rotation)
+    refresh_token_payload = {
+        "sub": str(user.id),
+        "jti": new_refresh_token_jti,
+        "type": "refresh",
+        "exp": int(refresh_token_exp_time.timestamp()),
+    }
+    new_refresh_token = jwt.encode(
+        refresh_token_payload,
+        settings.secret_key,
+        algorithm=settings.algorithm,
+    )
+
+    # Update session with new token JTIs (invalidates old tokens)
+    session.token_jti = new_access_token_jti
+    session.refresh_token_jti = new_refresh_token_jti
+    session.expires_at = access_token_exp_time
+    session.last_activity_at = datetime.utcnow()
+    db.commit()
+
+    # Return new token pair
+    return TokenResponse(
+        access_token=new_access_token,
+        refresh_token=new_refresh_token,
+        token_type="bearer",
+        expires_in=int(access_token_expires.total_seconds()),
+    )
