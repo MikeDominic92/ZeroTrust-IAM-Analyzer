@@ -1,15 +1,79 @@
 # ZeroTrust IAM Analyzer
+## A Cloud Infrastructure Entitlement Management (CIEM) Platform
 
 A comprehensive security analysis tool for evaluating identity and access management policies across multi-cloud environments.
 
 ## Overview
 
-ZeroTrust IAM Analyzer analyzes Google Cloud IAM policies and Google Workspace identity configurations to provide actionable security recommendations based on Zero Trust principles. The tool delivers security scoring, policy analysis, and automated remediation guidance through an intuitive web interface.
+ZeroTrust IAM Analyzer is a Cloud Infrastructure Entitlement Management (CIEM) platform that analyzes Google Cloud IAM policies and Google Workspace identity configurations to provide actionable security recommendations based on Zero Trust principles. The tool delivers security scoring, policy analysis, entitlement risk assessment, and automated remediation guidance through an intuitive web interface.
+
+### What is CIEM?
+
+Cloud Infrastructure Entitlement Management (CIEM) is a security discipline focused on managing and governing identities and their entitlements across cloud infrastructure. CIEM solutions help organizations:
+
+- **Discover** all identities across multi-cloud environments (human and machine)
+- **Analyze** permissions and entitlements to identify excessive access
+- **Detect** entitlement risks like privilege escalation paths and permission creep
+- **Remediate** security gaps through least-privilege recommendations
+- **Monitor** for policy drift and unauthorized entitlement changes
+
+CIEM is recognized by Gartner as a critical component of cloud security, addressing the challenge that **99% of cloud permissions granted are never used** (Gartner, 2024), creating massive attack surfaces and compliance risks.
+
+## CIEM Capabilities
+
+ZeroTrust IAM Analyzer provides comprehensive CIEM functionality:
+
+### Excessive Permissions Detection
+- Identifies overprivileged identities with unused permissions
+- Analyzes service accounts, user accounts, and workload identities
+- Detects broad wildcard permissions and administrative access
+- Highlights dormant accounts with standing privileges
+
+### Least-Privilege Scoring
+- Calculates risk scores for every identity (0-100 scale)
+- Evaluates permission usage patterns and access frequency
+- Compares granted permissions against actual resource usage
+- Recommends right-sized permissions based on activity analysis
+
+### Entitlement Risk Analysis
+- Maps privilege escalation paths across resources
+- Identifies permission creep and role accumulation over time
+- Detects dangerous permission combinations
+- Analyzes cross-project and cross-organization access
+
+### Cross-Cloud Visibility (Roadmap)
+- Currently: Google Cloud Platform and Google Workspace
+- Planned: AWS IAM Access Analyzer integration
+- Planned: Azure Entra ID and Azure RBAC support
+- Planned: Multi-cloud unified entitlement dashboard
+
+### Identity-to-Resource Mapping
+- Visual representation of who can access what
+- Resource-centric and identity-centric access views
+- Entitlement dependency analysis
+- Impact assessment for permission changes
+
+## CIEM vs Traditional IAM
+
+| Traditional IAM | CIEM (ZeroTrust IAM Analyzer) |
+|----------------|-------------------------------|
+| Manages user identities and authentication | Manages entitlements and permissions across all identity types |
+| Focuses on who you are | Focuses on what you can do |
+| Static role assignments | Dynamic risk-based permission analysis |
+| Manual access reviews | Automated entitlement discovery and analysis |
+| Point-in-time compliance checks | Continuous monitoring and drift detection |
+| Reactive permission cleanup | Proactive least-privilege recommendations |
+| Single cloud visibility | Cross-cloud entitlement management |
+
+CIEM complements traditional IAM by providing the visibility and governance layer needed to enforce Zero Trust principles at scale.
 
 ## Key Features
 
 - Security analysis for Google Cloud IAM and Google Workspace
 - Zero Trust security scoring (0-100 scale)
+- Excessive permissions detection and least-privilege recommendations
+- Entitlement risk analysis and privilege escalation path detection
+- Identity-to-resource mapping and access visualization
 - Actionable remediation recommendations
 - Interactive dashboard with real-time visualizations
 - Policy drift detection and monitoring
@@ -298,6 +362,7 @@ claudedocs/
 **Architecture Decisions:**
 - [ADR 001: Documentation Structure](claudedocs/decisions/001-documentation-structure.md): Documentation organization rationale
 - [ADR 002: Commit Strategy](claudedocs/decisions/002-commit-strategy.md): Crash recovery commit approach
+- [ADR 003: CIEM Positioning](claudedocs/decisions/003-ciem-positioning.md): Cloud Infrastructure Entitlement Management strategy
 
 **Progress Tracking:**
 - [Session Log](claudedocs/progress/session-log.md): Chronological work tracking across all sessions
@@ -339,6 +404,8 @@ This project implements a robust crash recovery mechanism to prevent work loss d
 - [GitHub Workflow Guide](github-workflow-guide.md)
 - [API Documentation](docs/api/README.md)
 - [Deployment Guide](docs/deployment/README.md)
+- [CIEM Capabilities](docs/CIEM_CAPABILITIES.md)
+- [Security](docs/SECURITY.md)
 
 ## Troubleshooting
 
