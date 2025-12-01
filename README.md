@@ -104,8 +104,8 @@ The system integrates with external APIs including Google Cloud IAM API, and Goo
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/zerotrust-iam-analyzer.git
-cd zerotrust-iam-analyzer
+git clone https://github.com/MikeDominic92/ZeroTrust-IAM-Analyzer.git
+cd ZeroTrust-IAM-Analyzer
 ```
 
 2. Set up environment variables:
