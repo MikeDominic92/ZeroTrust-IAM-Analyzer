@@ -144,6 +144,16 @@ npm install
 npm run dev
 ```
 
+Frontend will open at `http://localhost:3000`
+
+**Frontend Screenshots:**
+
+| Dashboard | Identity Explorer | Risk Analysis |
+|-----------|-------------------|---------------|
+| ![Dashboard](docs/screenshots/dashboard_page_1764612726130.png) | ![Identity](docs/screenshots/identity_page_1764612733500.png) | ![Risk](docs/screenshots/risk_page_1764612751598.png) |
+
+See [Frontend Walkthrough](docs/FRONTEND_WALKTHROUGH.md) for full documentation.
+
 ## Configuration
 
 ### Environment Variables
