@@ -8,7 +8,7 @@ with environment variable support.
 import os
 from typing import List, Optional
 
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -104,7 +104,8 @@ class Settings(BaseSettings):
     reload: bool = Field(default=False, env="RELOAD")
     show_docs: bool = Field(default=True, env="SHOW_DOCS")
 
-    @validator("cors_origins", pre=True)
+    @field_validator("cors_origins", mode="before")
+    @classmethod
     def assemble_cors_origins(cls, v):
         """Parse CORS origins from string or list."""
         if isinstance(v, str) and not v.startswith("["):
@@ -113,7 +114,8 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    @validator("environment")
+    @field_validator("environment")
+    @classmethod
     def validate_environment(cls, v):
         """Validate environment value."""
         allowed = ["development", "testing", "staging", "production"]
@@ -121,7 +123,8 @@ class Settings(BaseSettings):
             raise ValueError(f"Environment must be one of: {allowed}")
         return v
 
-    @validator("log_level")
+    @field_validator("log_level")
+    @classmethod
     def validate_log_level(cls, v):
         """Validate log level."""
         allowed = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]

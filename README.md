@@ -41,9 +41,9 @@ ZeroTrust IAM Analyzer provides comprehensive CIEM functionality:
 - Detects dangerous permission combinations
 - Analyzes cross-project and cross-organization access
 
-### Cross-Cloud Visibility (Roadmap)
-- Currently: Google Cloud Platform and Google Workspace
-- Planned: AWS IAM Access Analyzer integration
+### Cross-Cloud Visibility
+- **Active**: Google Cloud Platform and Google Workspace
+- **Active (v1.1)**: AWS IAM Access Analyzer integration
 - Planned: Azure Entra ID and Azure RBAC support
 - Planned: Multi-cloud unified entitlement dashboard
 
@@ -69,11 +69,12 @@ CIEM complements traditional IAM by providing the visibility and governance laye
 
 ## Key Features
 
-- Security analysis for Google Cloud IAM and Google Workspace
+- **Multi-Cloud Support**: Google Cloud IAM, Google Workspace, and AWS IAM (v1.1)
 - Zero Trust security scoring (0-100 scale)
 - Excessive permissions detection and least-privilege recommendations
 - Entitlement risk analysis and privilege escalation path detection
 - Identity-to-resource mapping and access visualization
+- **AWS IAM Access Analyzer Integration (v1.1)**: External access detection, policy validation, CIS compliance
 - Actionable remediation recommendations
 - Interactive dashboard with real-time visualizations
 - Policy drift detection and monitoring
@@ -153,6 +154,137 @@ Frontend will open at `http://localhost:3000`
 | ![Dashboard](docs/screenshots/dashboard_page_1764612726130.png) | ![Identity](docs/screenshots/identity_page_1764612733500.png) | ![Risk](docs/screenshots/risk_page_1764612751598.png) |
 
 See [Frontend Walkthrough](docs/FRONTEND_WALKTHROUGH.md) for full documentation.
+
+## Screenshots
+
+### Dashboard Overview
+| ![Dashboard](docs/screenshots/zerotrust_dashboard_01.png) | ![Identity Explorer](docs/screenshots/zerotrust_identity_explorer_02.png) | ![Risk Analysis](docs/screenshots/zerotrust_risk_analysis_03.png) | ![API Docs](docs/screenshots/zerotrust_api_docs_05.png) |
+
+## What's New in v1.1 (December 2025)
+
+### AWS IAM Access Analyzer Integration
+
+Version 1.1 extends ZeroTrust IAM Analyzer with comprehensive AWS cloud support, enabling true multi-cloud CIEM capabilities alongside existing GCP and Google Workspace analysis.
+
+#### Key Enhancements
+
+**1. AWS IAM Access Analyzer Connector**
+- Direct integration with AWS IAM Access Analyzer API via boto3
+- Automated discovery of external access findings across AWS resources
+- Support for multiple AWS regions and accounts
+- Mock mode for demos without live AWS credentials
+
+**2. External Access Detection**
+- Identify publicly accessible S3 buckets
+- Detect cross-account IAM role access
+- Find externally shared KMS encryption keys
+- Discover Lambda functions with public permissions
+- Analyze RDS snapshots, ECR repositories, and Secrets Manager secrets
+
+**3. Policy Validation Engine**
+- Validate IAM policies against CIS AWS Foundations Benchmark
+- Detect privilege escalation paths and excessive permissions
+- Identify wildcard principals, actions, and resources
+- Check for missing security conditions (MFA, IP restrictions, etc.)
+- Calculate least privilege compliance scores (0-100)
+
+**4. Finding Normalization**
+- Unified finding format across GCP and AWS platforms
+- Consistent severity scoring (CRITICAL, HIGH, MEDIUM, LOW, INFO)
+- Risk factor identification and compliance violation mapping
+- Actionable remediation recommendations
+
+**5. Enhanced Compliance**
+- CIS AWS Foundations Benchmark validation
+- NIST 800-53 alignment
+- PCI DSS controls mapping
+- Zero Trust principle verification
+
+#### AWS Integration Usage
+
+**Basic Setup:**
+```python
+from app.src.integrations import AWSAccessAnalyzer, FindingProcessor, PolicyValidator
+
+# Initialize AWS connector
+analyzer = AWSAccessAnalyzer(
+    region="us-east-1",
+    profile_name="my-aws-profile",
+    mock_mode=False  # Set True for demo without credentials
+)
+
+# List findings
+findings = analyzer.list_findings(status="ACTIVE", max_results=100)
+print(f"Found {len(findings)} active external access findings")
+
+# Process and normalize findings
+processor = FindingProcessor()
+normalized = processor.process_findings_batch(findings)
+
+# Get summary statistics
+stats = processor.get_summary_statistics(normalized)
+print(f"Average severity score: {stats['average_severity_score']:.1f}/100")
+print(f"Public exposures: {stats['public_exposures']}")
+
+# Validate IAM policy
+validator = PolicyValidator()
+policy_doc = {...}  # Your IAM policy JSON
+result = validator.validate_policy(policy_doc, policy_name="MyPolicy")
+
+if not result.is_valid:
+    print(f"Policy has {len(result.issues)} issues:")
+    for issue in result.issues:
+        print(f"  - [{issue.severity}] {issue.title}")
+        print(f"    {issue.recommendation}")
+```
+
+**Mock Mode for Demos:**
+```python
+# Use mock mode to demo functionality without AWS credentials
+analyzer = AWSAccessAnalyzer(region="us-east-1", mock_mode=True)
+findings = analyzer.list_findings()  # Returns sample mock data
+```
+
+#### AWS Configuration
+
+Add AWS credentials to your `.env` file:
+
+```bash
+# AWS Configuration (v1.1)
+AWS_REGION=us-east-1
+AWS_PROFILE=default
+# Or use explicit credentials:
+# AWS_ACCESS_KEY_ID=your-access-key
+# AWS_SECRET_ACCESS_KEY=your-secret-key
+```
+
+Ensure IAM Access Analyzer is enabled in your AWS account:
+```bash
+aws accessanalyzer create-analyzer \
+  --analyzer-name zerotrust-analyzer \
+  --type ACCOUNT
+```
+
+Required AWS IAM permissions:
+- `access-analyzer:ListAnalyzers`
+- `access-analyzer:GetAnalyzer`
+- `access-analyzer:ListFindings`
+- `access-analyzer:ListFindingsV2`
+- `access-analyzer:GetFinding`
+
+#### Integration Architecture
+
+The AWS integration follows the existing CIEM platform architecture:
+
+```
+backend/app/src/integrations/
+├── __init__.py                 # Module initialization
+├── aws_access_analyzer.py      # AWS API connector with boto3
+├── finding_processor.py        # Finding normalization and scoring
+└── policy_validator.py         # IAM policy validation engine
+```
+
+All AWS findings integrate seamlessly with the existing dashboard, providing unified visibility across GCP and AWS environments.
 
 ## Configuration
 

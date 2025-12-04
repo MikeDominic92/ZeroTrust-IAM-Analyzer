@@ -6,7 +6,7 @@ CORS middleware setup, API router inclusion, and health check endpoints.
 """
 
 from contextlib import asynccontextmanager
-from typing import Dict
+from typing import Dict, Any
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -111,7 +111,7 @@ async def not_found_handler(request: Request, exc):
 
 # Health check endpoints
 @app.get("/health", tags=["Health"])
-async def health_check() -> Dict[str, any]:
+async def health_check() -> Dict[str, Any]:
     """
     Basic health check endpoint.
 
@@ -127,7 +127,7 @@ async def health_check() -> Dict[str, any]:
 
 
 @app.get("/health/ready", tags=["Health"])
-async def readiness_check() -> Dict[str, any]:
+async def readiness_check() -> Dict[str, Any]:
     """
     Readiness check endpoint.
 
@@ -149,7 +149,7 @@ async def readiness_check() -> Dict[str, any]:
 
 
 @app.get("/health/live", tags=["Health"])
-async def liveness_check() -> Dict[str, any]:
+async def liveness_check() -> Dict[str, Any]:
     """
     Liveness check endpoint.
 
@@ -164,7 +164,7 @@ async def liveness_check() -> Dict[str, any]:
 
 
 @app.get("/health/detailed", tags=["Health"])
-async def detailed_health_check() -> Dict[str, any]:
+async def detailed_health_check() -> Dict[str, Any]:
     """
     Detailed health check endpoint.
 
@@ -194,7 +194,7 @@ async def detailed_health_check() -> Dict[str, any]:
 
 # Root endpoint
 @app.get("/", tags=["Root"])
-async def root() -> Dict[str, any]:
+async def root() -> Dict[str, Any]:
     """
     Root endpoint with application information.
 
@@ -212,7 +212,7 @@ async def root() -> Dict[str, any]:
 
 
 @app.get(f"{settings.api_prefix}/info", tags=["Root"])
-async def app_info() -> Dict[str, any]:
+async def app_info() -> Dict[str, Any]:
     """
     Application information endpoint.
 

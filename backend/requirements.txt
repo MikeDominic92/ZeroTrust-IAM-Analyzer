@@ -36,3 +36,8 @@ google-cloud-securitycenter>=1.31.0
 google-auth>=2.29.0
 google-auth-httplib2>=0.2.0
 google-api-python-client>=2.123.0
+
+# AWS SDKs - v1.1 Enhancement December 2025
+# AWS IAM Access Analyzer integration for multi-cloud CIEM
+boto3>=1.35.0
+botocore>=1.35.0
