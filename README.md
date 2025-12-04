@@ -64,7 +64,7 @@ Cloud Infrastructure Entitlement Management (CIEM) enables:
 ## The Solution: ZeroTrust IAM Analyzer
 
 <p align="center">
-  <img src="docs/screenshots/identity_page_1764612733500.png" alt="Identity Explorer" width="800"/>
+  <img src="docs/images/identity-new.png" alt="Identity Explorer" width="800"/>
 </p>
 
 ZeroTrust IAM Analyzer provides enterprise-grade CIEM capabilities across **GCP** and **AWS**:
@@ -92,34 +92,14 @@ ZeroTrust IAM Analyzer provides enterprise-grade CIEM capabilities across **GCP*
 <br/>Real-time CIEM metrics
 </td>
 <td align="center" width="33%">
-<img src="docs/screenshots/identity_page_1764612733500.png" alt="Identity Explorer"/>
+<img src="docs/images/identity-new.png" alt="Identity Explorer"/>
 <br/><strong>Identity Explorer</strong>
 <br/>Cross-cloud identity view
 </td>
 <td align="center" width="33%">
-<img src="docs/screenshots/risk_page_1764612751598.png" alt="Risk Analysis"/>
+<img src="docs/images/risk-new.png" alt="Risk Analysis"/>
 <br/><strong>Risk Analysis</strong>
 <br/>Entitlement risk scoring
-</td>
-</tr>
-</table>
-
-### API Documentation
-
-<table>
-<tr>
-<td align="center">
-<img src="docs/screenshots/zerotrust_api_docs_05.png" alt="API Docs"/>
-<br/><strong>REST API Documentation</strong>
-<br/>Full CIEM analysis endpoints
-</td>
-</tr>
-</table>
-
----
-
-## Why AWS IAM Access Analyzer? (v1.1)
-
 <table>
 <tr>
 <td width="60%">
