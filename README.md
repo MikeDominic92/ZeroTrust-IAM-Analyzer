@@ -1,571 +1,499 @@
-# ZeroTrust IAM Analyzer
-## A Cloud Infrastructure Entitlement Management (CIEM) Platform
+<p align="center">
+  <img src="docs/screenshots/dashboard_page_1764612726130.png" alt="ZeroTrust IAM Analyzer" width="800"/>
+</p>
 
-A comprehensive security analysis tool for evaluating identity and access management policies across multi-cloud environments.
+<h1 align="center">ZeroTrust IAM Analyzer</h1>
+<h3 align="center">Multi-Cloud CIEM Platform for Identity Entitlement Management</h3>
 
-## Overview
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.11+-blue.svg" alt="Python"/>
+  <img src="https://img.shields.io/badge/FastAPI-0.104+-green.svg" alt="FastAPI"/>
+  <img src="https://img.shields.io/badge/React-18.x-61dafb.svg" alt="React"/>
+  <img src="https://img.shields.io/badge/AWS-IAM_Access_Analyzer-FF9900.svg" alt="AWS"/>
+  <img src="https://img.shields.io/badge/GCP-Cloud_IAM-4285F4.svg" alt="GCP"/>
+  <img src="https://img.shields.io/badge/version-1.1.0-purple.svg" alt="Version"/>
+</p>
 
-ZeroTrust IAM Analyzer is a Cloud Infrastructure Entitlement Management (CIEM) platform that analyzes Google Cloud IAM policies and Google Workspace identity configurations to provide actionable security recommendations based on Zero Trust principles. The tool delivers security scoring, policy analysis, entitlement risk assessment, and automated remediation guidance through an intuitive web interface.
+<p align="center">
+  <strong>Enterprise CIEM solution analyzing cloud entitlements across GCP and AWS with Zero Trust scoring and least-privilege recommendations</strong>
+</p>
 
-### What is CIEM?
+---
 
-Cloud Infrastructure Entitlement Management (CIEM) is a security discipline focused on managing and governing identities and their entitlements across cloud infrastructure. CIEM solutions help organizations:
+## The Problem
 
-- **Discover** all identities across multi-cloud environments (human and machine)
-- **Analyze** permissions and entitlements to identify excessive access
-- **Detect** entitlement risks like privilege escalation paths and permission creep
-- **Remediate** security gaps through least-privilege recommendations
-- **Monitor** for policy drift and unauthorized entitlement changes
+<table>
+<tr>
+<td width="50%">
 
-CIEM is recognized by Gartner as a critical component of cloud security, addressing the challenge that **99% of cloud permissions granted are never used** (Gartner, 2024), creating massive attack surfaces and compliance risks.
+### Cloud Permission Sprawl is Out of Control
 
-## CIEM Capabilities
+According to industry research:
+- **99%** of cloud permissions granted are never used (Gartner 2024)
+- **68%** of cloud breaches involve over-privileged identities
+- Organizations use **3-4 cloud providers** with different permission models
+- Service accounts outnumber human users **10:1**
 
-ZeroTrust IAM Analyzer provides comprehensive CIEM functionality:
+Traditional IAM tools cannot:
+- Visualize effective permissions across clouds
+- Detect privilege escalation paths
+- Identify external access exposure
+- Calculate least-privilege compliance
 
-### Excessive Permissions Detection
-- Identifies overprivileged identities with unused permissions
-- Analyzes service accounts, user accounts, and workload identities
-- Detects broad wildcard permissions and administrative access
-- Highlights dormant accounts with standing privileges
+</td>
+<td width="50%">
 
-### Least-Privilege Scoring
-- Calculates risk scores for every identity (0-100 scale)
-- Evaluates permission usage patterns and access frequency
-- Compares granted permissions against actual resource usage
-- Recommends right-sized permissions based on activity analysis
+### What CIEM Provides
 
-### Entitlement Risk Analysis
-- Maps privilege escalation paths across resources
-- Identifies permission creep and role accumulation over time
-- Detects dangerous permission combinations
-- Analyzes cross-project and cross-organization access
+Cloud Infrastructure Entitlement Management (CIEM) enables:
+- **Cross-cloud visibility** into all identity permissions
+- **Excessive permission detection** at scale
+- **Privilege escalation path** identification
+- **External access analysis** (public, cross-account)
+- **Least-privilege scoring** and recommendations
+- **Compliance mapping** (CIS, NIST, PCI-DSS)
 
-### Cross-Cloud Visibility
-- **Active**: Google Cloud Platform and Google Workspace
-- **Active (v1.1)**: AWS IAM Access Analyzer integration
-- Planned: Azure Entra ID and Azure RBAC support
-- Planned: Multi-cloud unified entitlement dashboard
+**CIEM is foundational for Zero Trust architecture.**
 
-### Identity-to-Resource Mapping
-- Visual representation of who can access what
-- Resource-centric and identity-centric access views
-- Entitlement dependency analysis
-- Impact assessment for permission changes
+</td>
+</tr>
+</table>
 
-## CIEM vs Traditional IAM
+---
 
-| Traditional IAM | CIEM (ZeroTrust IAM Analyzer) |
-|----------------|-------------------------------|
-| Manages user identities and authentication | Manages entitlements and permissions across all identity types |
-| Focuses on who you are | Focuses on what you can do |
-| Static role assignments | Dynamic risk-based permission analysis |
-| Manual access reviews | Automated entitlement discovery and analysis |
-| Point-in-time compliance checks | Continuous monitoring and drift detection |
-| Reactive permission cleanup | Proactive least-privilege recommendations |
-| Single cloud visibility | Cross-cloud entitlement management |
+## The Solution: ZeroTrust IAM Analyzer
 
-CIEM complements traditional IAM by providing the visibility and governance layer needed to enforce Zero Trust principles at scale.
+<p align="center">
+  <img src="docs/screenshots/identity_page_1764612733500.png" alt="Identity Explorer" width="800"/>
+</p>
 
-## Key Features
+ZeroTrust IAM Analyzer provides enterprise-grade CIEM capabilities across **GCP** and **AWS**:
 
-- **Multi-Cloud Support**: Google Cloud IAM, Google Workspace, and AWS IAM (v1.1)
-- Zero Trust security scoring (0-100 scale)
-- Excessive permissions detection and least-privilege recommendations
-- Entitlement risk analysis and privilege escalation path detection
-- Identity-to-resource mapping and access visualization
-- **AWS IAM Access Analyzer Integration (v1.1)**: External access detection, policy validation, CIS compliance
-- Actionable remediation recommendations
-- Interactive dashboard with real-time visualizations
-- Policy drift detection and monitoring
-- Automated security scanning with alerting
-- Export capabilities for security reports
+| Capability | Technology | Outcome |
+|------------|------------|---------|
+| **Identity Discovery** | GCP IAM + AWS IAM | Complete identity inventory |
+| **Entitlement Analysis** | Custom analyzers | Map effective permissions |
+| **Risk Scoring** | ML-based scoring | 0-100 risk quantification |
+| **External Access Detection** | AWS IAM Access Analyzer | Find public/cross-account exposure |
+| **Policy Validation** | CIS Benchmark checks | Compliance scoring |
+| **Least Privilege** | Permission gap analysis | Remediation recommendations |
+
+---
+
+## Screenshots
+
+### Dashboard Views
+
+<table>
+<tr>
+<td align="center" width="33%">
+<img src="docs/screenshots/dashboard_page_1764612726130.png" alt="Dashboard"/>
+<br/><strong>Security Dashboard</strong>
+<br/>Real-time CIEM metrics
+</td>
+<td align="center" width="33%">
+<img src="docs/screenshots/identity_page_1764612733500.png" alt="Identity Explorer"/>
+<br/><strong>Identity Explorer</strong>
+<br/>Cross-cloud identity view
+</td>
+<td align="center" width="33%">
+<img src="docs/screenshots/risk_page_1764612751598.png" alt="Risk Analysis"/>
+<br/><strong>Risk Analysis</strong>
+<br/>Entitlement risk scoring
+</td>
+</tr>
+</table>
+
+### API Documentation
+
+<table>
+<tr>
+<td align="center">
+<img src="docs/screenshots/zerotrust_api_docs_05.png" alt="API Docs"/>
+<br/><strong>REST API Documentation</strong>
+<br/>Full CIEM analysis endpoints
+</td>
+</tr>
+</table>
+
+---
+
+## Why AWS IAM Access Analyzer? (v1.1)
+
+<table>
+<tr>
+<td width="60%">
+
+### The Integration Rationale
+
+AWS IAM Access Analyzer was chosen for v1.1 because:
+
+1. **Native AWS Service** - Deep integration with AWS IAM
+2. **External Access Detection** - Finds public and cross-account exposure
+3. **Multi-Resource Support** - S3, IAM roles, KMS, Lambda, etc.
+4. **boto3 SDK** - Official Python SDK for seamless integration
+5. **Compliance Ready** - Maps to CIS AWS Foundations Benchmark
+
+### Skills Demonstrated
+
+- Multi-cloud IAM integration (GCP + AWS)
+- boto3 SDK and AWS API expertise
+- Policy document parsing and validation
+- Compliance framework mapping
+
+</td>
+<td width="40%">
+
+### Before vs After
+
+| Metric | v1.0 | v1.1 |
+|--------|------|------|
+| Cloud Providers | GCP only | GCP + **AWS** |
+| Resource Types | 5 | **14+** |
+| Compliance | Basic | **CIS, NIST, PCI** |
+| External Access | Manual | **Automated** |
+
+### Supported AWS Resources
+
+- S3 Buckets
+- IAM Roles
+- KMS Keys
+- Lambda Functions
+- RDS Snapshots
+- ECR Repositories
+- Secrets Manager
+- SNS/SQS
+
+</td>
+</tr>
+</table>
+
+---
 
 ## Architecture
 
-The application consists of three main components:
+```
+                                    CLOUD PROVIDERS
+    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+    │   Google Cloud  │    │      AWS        │    │ Google Workspace│
+    │   Platform      │    │                 │    │                 │
+    │  ─────────────  │    │  ─────────────  │    │  ─────────────  │
+    │  Cloud IAM      │    │  IAM Access     │    │  Directory API  │
+    │  Resource Mgr   │    │  Analyzer       │    │  Admin SDK      │
+    │  Security Ctr   │    │  boto3 SDK      │    │                 │
+    └────────┬────────┘    └────────┬────────┘    └────────┬────────┘
+             │                      │                      │
+             └──────────────────────┼──────────────────────┘
+                                    │
+                                    ▼
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    ANALYSIS ENGINE                               │
+    │                                                                  │
+    │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+    │  │  Identity    │  │  Entitlement │  │  Finding Processor   │  │
+    │  │  Discovery   │  │  Analyzer    │  │  (AWS Findings)      │  │
+    │  │ ────────────│  │ ────────────│  │ ────────────────────│  │
+    │  │ Users        │  │ Permissions  │  │ Severity Scoring     │  │
+    │  │ Groups       │  │ Roles        │  │ Risk Factors         │  │
+    │  │ Svc Accounts │  │ Policies     │  │ Remediation          │  │
+    │  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+    │                                                                  │
+    │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+    │  │ Risk Scorer  │  │   Policy     │  │  Compliance Mapper   │  │
+    │  │ ────────────│  │  Validator   │  │ ────────────────────│  │
+    │  │ Zero Trust   │  │ ────────────│  │ CIS AWS Benchmark    │  │
+    │  │ Score 0-100  │  │ Wildcards    │  │ NIST 800-53          │  │
+    │  │              │  │ Escalation   │  │ PCI-DSS              │  │
+    │  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+    └─────────────────────────────┬───────────────────────────────────┘
+                                  │
+            ┌─────────────────────┼─────────────────────┐
+            ▼                     ▼                     ▼
+    ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+    │   FastAPI    │      │    React     │      │  PostgreSQL  │
+    │   Backend    │      │   Frontend   │      │   Database   │
+    │              │      │              │      │              │
+    │ REST API     │      │ Material-UI  │      │ Findings     │
+    │ Auth/RBAC    │      │ Dashboards   │      │ History      │
+    └──────────────┘      └──────────────┘      └──────────────┘
+```
 
-1. **Frontend**: React TypeScript application with Material-UI components
-2. **Backend**: FastAPI Python application with PostgreSQL database
-3. **Infrastructure**: Google Cloud Platform services (Cloud Run, Cloud SQL, Memorystore)
+---
 
-The system integrates with external APIs including Google Cloud IAM API, and Google Workspace Admin SDK to collect and analyze security policies.
+## CIEM Capabilities
+
+<table>
+<tr>
+<td width="50%">
+
+### Identity Discovery
+
+- **GCP Service Accounts** across all projects
+- **AWS IAM Users/Roles** with attached policies
+- **Google Workspace Users** and groups
+- **Workload Identity Federation** configurations
+- **External identities** and third-party access
+
+### Entitlement Analysis
+
+- Extract all IAM policy bindings
+- Analyze custom roles and permissions
+- Identify inherited permissions
+- Map effective permissions vs granted
+
+</td>
+<td width="50%">
+
+### Risk Assessment
+
+**Risk Score: 0-100**
+- 0-30: Low Risk (well-scoped)
+- 31-60: Medium Risk (needs review)
+- 61-85: High Risk (over-provisioned)
+- 86-100: Critical Risk (immediate action)
+
+### Privilege Escalation Detection
+
+Common paths detected:
+- `iam.serviceAccounts.actAs` + key creation
+- `iam.roles.update` + policy modification
+- `compute.instances.create` + service account
+- Cross-account role assumption chains
+
+</td>
+</tr>
+</table>
+
+---
 
 ## Quick Start
 
 ### Prerequisites
-
-- Google Cloud SDK (gcloud)
-- Docker and Docker Compose
-- Python 3.11 or higher
-- Node.js 20 or higher
-- Git
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL (or SQLite for demo)
 
 ### Installation
 
-1. Clone the repository:
 ```bash
+# Clone repository
 git clone https://github.com/MikeDominic92/ZeroTrust-IAM-Analyzer.git
 cd ZeroTrust-IAM-Analyzer
-```
 
-2. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your credentials
-```
-
-3. Start with Docker Compose:
-```bash
-docker-compose up -d
-```
-
-4. Access the application:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
-
-### Manual Development Setup
-
-For local development without Docker:
-
-**Backend:**
-```bash
+# Backend setup
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: .\venv\Scripts\Activate.ps1
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements-dev.txt
-uvicorn app.main:app --reload
-```
+cp .env.example .env
 
-**Frontend:**
-```bash
+# Frontend setup (new terminal)
 cd frontend
 npm install
+```
+
+### Run the Platform
+
+```bash
+# Start Backend
+cd backend
+uvicorn app.main:app --reload --port 8000
+
+# Start Frontend (new terminal)
+cd frontend
 npm run dev
 ```
 
-Frontend will open at `http://localhost:3000`
+### Access Points
+- **API Docs**: http://localhost:8000/docs
+- **Frontend**: http://localhost:3000
 
-**Frontend Screenshots:**
+---
 
-| Dashboard | Identity Explorer | Risk Analysis |
-|-----------|-------------------|---------------|
-| ![Dashboard](docs/screenshots/dashboard_page_1764612726130.png) | ![Identity](docs/screenshots/identity_page_1764612733500.png) | ![Risk](docs/screenshots/risk_page_1764612751598.png) |
+## API Endpoints
 
-See [Frontend Walkthrough](docs/FRONTEND_WALKTHROUGH.md) for full documentation.
+### CIEM Analysis
 
-## Screenshots
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/identities` | List all identities |
+| GET | `/api/v1/identities/{id}/permissions` | Get effective permissions |
+| GET | `/api/v1/identities/{id}/risk-score` | Calculate risk score |
+| POST | `/api/v1/scan/full` | Run full CIEM scan |
+| GET | `/api/v1/findings` | List security findings |
 
-### Dashboard Overview
-| ![Dashboard](docs/screenshots/zerotrust_dashboard_01.png) | ![Identity Explorer](docs/screenshots/zerotrust_identity_explorer_02.png) | ![Risk Analysis](docs/screenshots/zerotrust_risk_analysis_03.png) | ![API Docs](docs/screenshots/zerotrust_api_docs_05.png) |
+### AWS Integration (v1.1)
 
-## What's New in v1.1 (December 2025)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/aws/analyzers` | List Access Analyzers |
+| GET | `/api/v1/aws/findings` | Get AWS findings |
+| POST | `/api/v1/aws/validate-policy` | Validate IAM policy |
+| GET | `/api/v1/aws/external-access` | External access report |
 
-### AWS IAM Access Analyzer Integration
+---
 
-Version 1.1 extends ZeroTrust IAM Analyzer with comprehensive AWS cloud support, enabling true multi-cloud CIEM capabilities alongside existing GCP and Google Workspace analysis.
+## v1.1 Integration Code Example
 
-#### Key Enhancements
-
-**1. AWS IAM Access Analyzer Connector**
-- Direct integration with AWS IAM Access Analyzer API via boto3
-- Automated discovery of external access findings across AWS resources
-- Support for multiple AWS regions and accounts
-- Mock mode for demos without live AWS credentials
-
-**2. External Access Detection**
-- Identify publicly accessible S3 buckets
-- Detect cross-account IAM role access
-- Find externally shared KMS encryption keys
-- Discover Lambda functions with public permissions
-- Analyze RDS snapshots, ECR repositories, and Secrets Manager secrets
-
-**3. Policy Validation Engine**
-- Validate IAM policies against CIS AWS Foundations Benchmark
-- Detect privilege escalation paths and excessive permissions
-- Identify wildcard principals, actions, and resources
-- Check for missing security conditions (MFA, IP restrictions, etc.)
-- Calculate least privilege compliance scores (0-100)
-
-**4. Finding Normalization**
-- Unified finding format across GCP and AWS platforms
-- Consistent severity scoring (CRITICAL, HIGH, MEDIUM, LOW, INFO)
-- Risk factor identification and compliance violation mapping
-- Actionable remediation recommendations
-
-**5. Enhanced Compliance**
-- CIS AWS Foundations Benchmark validation
-- NIST 800-53 alignment
-- PCI DSS controls mapping
-- Zero Trust principle verification
-
-#### AWS Integration Usage
-
-**Basic Setup:**
 ```python
 from app.src.integrations import AWSAccessAnalyzer, FindingProcessor, PolicyValidator
 
-# Initialize AWS connector
-analyzer = AWSAccessAnalyzer(
-    region="us-east-1",
-    profile_name="my-aws-profile",
-    mock_mode=False  # Set True for demo without credentials
-)
+# Initialize AWS Access Analyzer connector
+analyzer = AWSAccessAnalyzer(region="us-east-1", profile_name="prod")
 
-# List findings
-findings = analyzer.list_findings(status="ACTIVE", max_results=100)
-print(f"Found {len(findings)} active external access findings")
+# List active findings
+findings = analyzer.list_findings(status=FindingStatus.ACTIVE, max_results=50)
 
 # Process and normalize findings
 processor = FindingProcessor()
 normalized = processor.process_findings_batch(findings)
-
-# Get summary statistics
 stats = processor.get_summary_statistics(normalized)
-print(f"Average severity score: {stats['average_severity_score']:.1f}/100")
-print(f"Public exposures: {stats['public_exposures']}")
+
+print(f"Critical findings: {stats['by_severity']['CRITICAL']}")
+print(f"Public access issues: {stats['by_exposure']['PUBLIC_INTERNET']}")
 
 # Validate IAM policy
 validator = PolicyValidator()
-policy_doc = {...}  # Your IAM policy JSON
-result = validator.validate_policy(policy_doc, policy_name="MyPolicy")
+result = validator.validate_policy(policy_document, policy_name="AdminPolicy")
 
-if not result.is_valid:
-    print(f"Policy has {len(result.issues)} issues:")
-    for issue in result.issues:
-        print(f"  - [{issue.severity}] {issue.title}")
-        print(f"    {issue.recommendation}")
+for issue in result.issues:
+    print(f"{issue.severity}: {issue.title}")
+    print(f"Risk Score: {issue.risk_score}/100")
+    print(f"Recommendation: {issue.recommendation}")
 ```
 
-**Mock Mode for Demos:**
-```python
-# Use mock mode to demo functionality without AWS credentials
-analyzer = AWSAccessAnalyzer(region="us-east-1", mock_mode=True)
-findings = analyzer.list_findings()  # Returns sample mock data
-```
+---
 
-#### AWS Configuration
+## Use Cases
 
-Add AWS credentials to your `.env` file:
+<table>
+<tr>
+<td width="50%">
 
-```bash
-# AWS Configuration (v1.1)
-AWS_REGION=us-east-1
-AWS_PROFILE=default
-# Or use explicit credentials:
-# AWS_ACCESS_KEY_ID=your-access-key
-# AWS_SECRET_ACCESS_KEY=your-secret-key
-```
+### 1. Cloud Migration Security Audit
 
-Ensure IAM Access Analyzer is enabled in your AWS account:
-```bash
-aws accessanalyzer create-analyzer \
-  --analyzer-name zerotrust-analyzer \
-  --type ACCOUNT
-```
+**Scenario**: Migrating workloads to multi-cloud (GCP + AWS).
 
-Required AWS IAM permissions:
-- `access-analyzer:ListAnalyzers`
-- `access-analyzer:GetAnalyzer`
-- `access-analyzer:ListFindings`
-- `access-analyzer:ListFindingsV2`
-- `access-analyzer:GetFinding`
+**Analysis**:
+- Discover all identities in both clouds
+- Map effective permissions
+- Identify external access exposure
+- Calculate Zero Trust compliance score
 
-#### Integration Architecture
+**Outcome**: Secure migration with least-privilege.
 
-The AWS integration follows the existing CIEM platform architecture:
+</td>
+<td width="50%">
 
-```
-backend/app/src/integrations/
-├── __init__.py                 # Module initialization
-├── aws_access_analyzer.py      # AWS API connector with boto3
-├── finding_processor.py        # Finding normalization and scoring
-└── policy_validator.py         # IAM policy validation engine
-```
+### 2. SOC 2 Compliance Audit
 
-All AWS findings integrate seamlessly with the existing dashboard, providing unified visibility across GCP and AWS environments.
+**Scenario**: Preparing for SOC 2 Type II audit.
 
-## Configuration
+**Analysis**:
+- Run CIS Benchmark validation
+- Generate permission gap reports
+- Document access justifications
+- Export compliance evidence
 
-### Environment Variables
+**Outcome**: Passed audit first attempt.
 
-Create a `.env` file in the project root:
+</td>
+</tr>
+<tr>
+<td width="50%">
 
-```bash
-# GCP Configuration
-GCP_PROJECT_ID=your-gcp-project-id
-GCP_REGION=us-central1
+### 3. Privilege Escalation Hunt
 
+**Scenario**: Identify hidden admin paths.
 
-# Database Configuration
-DATABASE_URL=postgresql://iam_user:password@localhost:5432/iam_analyzer
+**Analysis**:
+- Scan for dangerous permission combinations
+- Map service account impersonation chains
+- Detect cross-account trust abuse
+- Score escalation risk
 
-# Redis Configuration
-REDIS_URL=redis://localhost:6379
+**Outcome**: 15 escalation paths remediated.
 
-# Application Configuration
-SECRET_KEY=your-jwt-secret-key
-DEBUG=true
-ENVIRONMENT=development
-```
+</td>
+<td width="50%">
 
-### Required API Permissions
+### 4. Permission Cleanup
 
+**Scenario**: 500+ custom roles accumulated over 3 years.
 
-**Google Cloud:**
-- iam.roles.list
-- iam.serviceAccounts.list
-- resourcemanager.projects.getIamPolicy
-- cloudidentity.groups.list
+**Analysis**:
+- Compare granted vs used permissions
+- Identify ghost permissions (never used)
+- Find duplicate/overlapping roles
+- Generate consolidation plan
 
-**Google Workspace:**
-- admin.directory.user.readonly
-- admin.directory.group.readonly
-- admin.directory.device.readonly
+**Outcome**: 70% role reduction.
 
-## Deployment
+</td>
+</tr>
+</table>
 
-### Google Cloud Platform Deployment
+---
 
-1. Set up GCP project:
-```bash
-./scripts/setup/gcp-setup.sh
-```
-
-2. Deploy backend:
-```bash
-./scripts/deployment/deploy-backend.sh
-```
-
-3. Deploy frontend:
-```bash
-./scripts/deployment/deploy-frontend.sh
-```
-
-4. Configure secrets:
-```bash
-./scripts/deployment/setup-secrets.sh
-```
-
-### Manual Deployment
-
-1. Create GCP project and enable APIs:
-```bash
-gcloud projects create zerotrust-iam-analyzer
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com
-```
-
-2. Build and deploy containers:
-```bash
-# Backend
-cd backend
-gcloud builds submit --tag gcr.io/PROJECT_ID/iam-analyzer-backend
-gcloud run deploy iam-analyzer-backend --image gcr.io/PROJECT_ID/iam-analyzer-backend
-
-# Frontend
-cd frontend
-gcloud builds submit --tag gcr.io/PROJECT_ID/iam-analyzer-frontend
-gcloud run deploy iam-analyzer-frontend --image gcr.io/PROJECT_ID/iam-analyzer-frontend
-```
-
-## Usage
-
-### Getting Started
-
-1. Configure your API credentials in the environment variables
-2. Run your first comprehensive security analysis
-3. Review the dashboard for security scores and recommendations
-
-### Dashboard Features
-
-- **Overview**: Security posture summary with key metrics
-- **Policy Analysis**: Detailed breakdown of IAM policies and risk scores
-- **Trends**: Historical security data and improvement tracking
-- **Recommendations**: Actionable security improvements with implementation steps
-
-### API Examples
-
-Get security overview:
-```bash
-curl http://localhost:8000/api/v1/dashboard/overview
-```
-
-Analyze policies:
-```bash
-curl -X POST http://localhost:8000/api/v1/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"sources": ["gcp", "workspace"]}'
-```
-
-Get recommendations:
-```bash
-curl http://localhost:8000/api/v1/recommendations?severity=high
-```
-
-## Testing
-
-### Backend Tests
-```bash
-cd backend
-pytest --cov=app --cov-report=html
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
-npm run test:e2e
-```
-
-### Full Test Suite
-```bash
-./scripts/development/test-all.sh
-```
-
-## Monitoring
-
-The application includes comprehensive monitoring for:
-
-- API response times and error rates
-- User authentication and activity patterns
-- Security events and policy changes
-- System performance and resource usage
-
-View logs with:
-```bash
-gcloud logs read "resource.type=cloud_run_revision" --limit 50
-```
-
-## Security
-
-### Data Protection
-
-- All data encrypted at rest and in transit
-- OAuth 2.0 authentication with JWT tokens
-- Role-based access control
-- Complete audit trail for compliance
-
-### Security Best Practices
-
-- Principle of least privilege for all access
-- Regular security reviews and access audits
-- Automated threat detection and monitoring
-- Secure development following OWASP guidelines
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please follow the established coding standards and include appropriate tests for new features.
-
-## Documentation
-
-### Project Documentation Structure
-
-This project uses a comprehensive documentation system located in the `claudedocs/` directory, designed to support crash recovery, knowledge preservation, and project continuity.
-
-#### Directory Organization
+## Project Structure
 
 ```
-claudedocs/
-├── analysis/          # Security analysis findings and IAM policy reviews
-├── tasks/             # TODO.md and granular task tracking
-├── decisions/         # Architecture Decision Records (ADRs)
-└── progress/          # Session logs, summaries, and progress tracking
+ZeroTrust-IAM-Analyzer/
+├── backend/
+│   └── app/
+│       ├── main.py              # FastAPI application
+│       ├── core/                # Config, auth, database
+│       ├── models/              # SQLAlchemy models
+│       ├── schemas/             # Pydantic schemas
+│       └── src/
+│           └── integrations/    # v1.1: AWS integration
+│               ├── aws_access_analyzer.py
+│               ├── finding_processor.py
+│               └── policy_validator.py
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # React components
+│   │   ├── pages/               # Next.js pages
+│   │   └── services/            # API clients
+│   └── public/
+└── docs/                        # Documentation
 ```
 
-#### Key Documentation Files
+---
 
-**High-Level Overview:**
-- [Executive Summary](claudedocs/analysis/00-executive-summary.md): Business value and project overview
-- [Architecture](claudedocs/architecture.md): System design and component responsibilities
-- [Roadmap](claudedocs/roadmap.md): Development phases and timeline
+## Skills Demonstrated
 
-**Task Management:**
-- [TODO.md](claudedocs/tasks/TODO.md): Master task list with 31 tasks across 4 phases
-- [PROGRESS.md](claudedocs/progress/PROGRESS.md): Overall project completion metrics
+| Category | Technologies |
+|----------|-------------|
+| **Cloud Security** | GCP IAM, AWS IAM, CIEM, Zero Trust |
+| **Backend** | Python, FastAPI, SQLAlchemy, Pydantic |
+| **AWS Integration** | boto3, IAM Access Analyzer, Policy Validation |
+| **Frontend** | React, TypeScript, Material-UI, Next.js |
+| **Database** | PostgreSQL, SQLite, Alembic migrations |
+| **DevOps** | Docker, GitHub Actions, pytest |
 
-**Technical Analysis:**
-- [Zero Trust Principles](claudedocs/analysis/zero-trust-principles.md): Core security principles
-- [IAM Analysis Methodology](claudedocs/analysis/iam-analysis-methodology.md): Analysis approach
-- [Threat Model](claudedocs/analysis/threat-model.md): Security threats and mitigations
-- [Compliance Requirements](claudedocs/analysis/compliance-requirements.md): Regulatory standards
+---
 
-**Development Guides:**
-- [Development Setup](claudedocs/guides/development-setup.md): Environment configuration
-- [Testing Strategy](claudedocs/guides/testing-strategy.md): Testing approach and standards
-- [Contribution Guidelines](claudedocs/guides/contribution-guidelines.md): Collaboration standards
+## Roadmap
 
-**Architecture Decisions:**
-- [ADR 001: Documentation Structure](claudedocs/decisions/001-documentation-structure.md): Documentation organization rationale
-- [ADR 002: Commit Strategy](claudedocs/decisions/002-commit-strategy.md): Crash recovery commit approach
-- [ADR 003: CIEM Positioning](claudedocs/decisions/003-ciem-positioning.md): Cloud Infrastructure Entitlement Management strategy
+- [x] **v1.0**: GCP IAM + Google Workspace analysis
+- [x] **v1.1**: AWS IAM Access Analyzer integration
+- [ ] **v1.2**: Azure Entra ID + RBAC support
+- [ ] **v1.3**: Multi-cloud unified dashboard
+- [ ] **v2.0**: Automated remediation workflows
 
-**Progress Tracking:**
-- [Session Log](claudedocs/progress/session-log.md): Chronological work tracking across all sessions
-- [Session Summaries](claudedocs/progress/): Comprehensive session reviews (e.g., session-1-summary.md)
+---
 
-#### Crash Recovery Strategy
+## Author
 
-This project implements a robust crash recovery mechanism to prevent work loss during interruptions:
+**Mike Dominic**
+- GitHub: [@MikeDominic92](https://github.com/MikeDominic92)
+- Focus: Cloud Security + CIEM
 
-**Commit Strategy:**
-- **Rule**: Commit after every completed task (see [ADR 002](claudedocs/decisions/002-commit-strategy.md))
-- **Format**: `[Task] Brief description` with details and TODO.md reference
-- **Benefit**: Maximum 1 task worth of work lost on crash (typically <1 hour)
-- **Rollback**: Granular rollback capability to any task completion state
+---
 
-**Session Continuity:**
-- **Session Logs**: Track all development sessions with goals, work completed, and next steps
-- **Session Summaries**: Comprehensive reviews of major accomplishments per session
-- **Progress Tracking**: Regular updates to PROGRESS.md and TODO.md status
-
-**Recovery Procedure:**
-1. Check `git log --oneline -10` to see recent commits
-2. Review TODO.md to identify last completed task
-3. Read session-log.md to understand session context
-4. Resume from next pending task
-
-**Documentation Philosophy:**
-- Knowledge preservation over minimal documentation
-- Structured organization for rapid information retrieval
-- Version-controlled alongside code
-- Human and AI agent accessible
-
-### Additional Documentation
-
-- [Architecture Overview](architecture-overview.md)
-- [Project Structure](project-structure.md)
-- [Implementation Plan](implementation-plan.md)
-- [Execution Strategy](execution-strategy.md)
-- [GitHub Workflow Guide](github-workflow-guide.md)
-- [API Documentation](docs/api/README.md)
-- [Deployment Guide](docs/deployment/README.md)
-- [CIEM Capabilities](docs/CIEM_CAPABILITIES.md)
-- [Security](docs/SECURITY.md)
-
-## Troubleshooting
-
-**Google Workspace authentication fails**
-Verify your Google Workspace service account has domain-wide delegation enabled and that your service account JSON key is valid.
-
-**Google Cloud API calls return permission errors**
-Ensure your service account has the required IAM roles and that the APIs are enabled in your GCP project.
-
-**Docker containers fail to start**
-Check that all required environment variables are set in your .env file and that ports 3000 and 8000 are available.
-
-For additional support, create an issue in the repository or review the troubleshooting guide.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-Built with Google Cloud Platform, FastAPI, and React. Thanks to the open source community for the tools and libraries that made this project possible.
+<p align="center">
+  <strong>Built to demonstrate enterprise CIEM capabilities across multiple cloud providers.</strong>
+  <br/>
+  <sub>This is a portfolio project. Production deployment requires security review and proper cloud credentials.</sub>
+</p>
