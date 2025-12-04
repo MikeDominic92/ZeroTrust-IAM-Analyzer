@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/screenshots/dashboard_page_1764612726130.png" alt="ZeroTrust IAM Analyzer" width="800"/>
+  <img src="docs/images/dashboard-new.png" alt="ZeroTrust IAM Analyzer" width="800"/>
 </p>
 
 <h1 align="center">ZeroTrust IAM Analyzer</h1>
@@ -87,7 +87,7 @@ ZeroTrust IAM Analyzer provides enterprise-grade CIEM capabilities across **GCP*
 <table>
 <tr>
 <td align="center" width="33%">
-<img src="docs/screenshots/dashboard_page_1764612726130.png" alt="Dashboard"/>
+<img src="docs/images/dashboard-new.png" alt="Dashboard"/>
 <br/><strong>Security Dashboard</strong>
 <br/>Real-time CIEM metrics
 </td>
