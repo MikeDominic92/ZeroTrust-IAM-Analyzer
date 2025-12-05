@@ -468,12 +468,26 @@ ZeroTrust-IAM-Analyzer/
 
 **Mike Dominic**
 - GitHub: [@MikeDominic92](https://github.com/MikeDominic92)
-- Focus: Cloud Security + CIEM
+- Focus: Zero Trust Architecture, Multi-Cloud IAM, CIEM
+
+---
+
+## Chainguard IT Engineer (Identity/IAM) Alignment
+
+This project demonstrates key competencies for senior IAM engineering roles:
+
+| Requirement | Evidence |
+|-------------|----------|
+| Zero Trust architecture (AWS, GCP, Azure) | Multi-cloud IAM analysis engine |
+| IAM governance and RBAC | Policy validation and entitlement analysis |
+| SOC 2/ISO 27001/NIST compliance | CIS benchmark validation, audit evidence |
+| Policy framework implementation | Policy validator and gap detection |
+| Risk assessment | Zero Trust scoring (0-100) |
 
 ---
 
 <p align="center">
-  <strong>Built to demonstrate enterprise CIEM capabilities across multiple cloud providers.</strong>
+  <strong>Multi-Cloud Zero Trust IAM Analysis Platform</strong>
   <br/>
-  <sub>This is a portfolio project. Production deployment requires security review and proper cloud credentials.</sub>
+  <sub>Demonstrates CIEM, Zero Trust Scoring, and Compliance Automation across AWS and GCP</sub>
 </p>
