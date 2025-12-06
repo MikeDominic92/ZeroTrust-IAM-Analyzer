@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/React-18.x-61dafb.svg" alt="React"/>
   <img src="https://img.shields.io/badge/AWS-IAM_Access_Analyzer-FF9900.svg" alt="AWS"/>
   <img src="https://img.shields.io/badge/GCP-Cloud_IAM-4285F4.svg" alt="GCP"/>
-  <img src="https://img.shields.io/badge/version-1.1.0-purple.svg" alt="Version"/>
+  <img src="https://img.shields.io/badge/version-1.2.0-purple.svg" alt="Version"/>
 </p>
 
 <p align="center">
